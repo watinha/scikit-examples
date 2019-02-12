@@ -1,6 +1,8 @@
-import re, codecs, np
+import re, codecs, np, random
 
+from sklearn import tree, metrics
 from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.model_selection import cross_val_score, GroupKFold
 
 class BibParser:
     def __init__ (self):
@@ -47,7 +49,24 @@ class GenerateDataset:
                 for text_data in texts_list ]
         vectorizer = TfidfVectorizer()
         features = vectorizer.fit_transform(texts)
-        return {
+        result = {
             'features': features,
             'categories': np.array(categories)
         }
+        print (result)
+        return result
+
+class DecisionTreeClassifier:
+    def __init__ (self, seed):
+        self._seed = seed
+
+    def execute (self, dataset):
+        print('===== Decision Tree Classifier =====')
+        X = dataset['features']
+        y = dataset['categories']
+        random.seed(self._seed)
+        model = tree.DecisionTreeClassifier(criterion='entropy', random_state=self._seed)
+        scores = cross_val_score(model, X, y, cv=5, scoring='f1_macro')
+        print(scores)
+        print("OUR APPROACH F-measure: %s on average and %s SD" % (scores.mean(), scores.std()))
+        return scores
