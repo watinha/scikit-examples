@@ -1,13 +1,15 @@
-import re, codecs
+import re, codecs, np
+
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 class BibParser:
-    def __init__ (self, files_list):
-        self.files_list = files_list
+    def __init__ (self):
         self.texts_list = []
 
-    def execute (self):
-        for file_index in range(len(self.files_list)):
-            filename = self.files_list[file_index];
+    def execute (self, files_list):
+        print('===== Reading bib and transforming to text =====')
+        for file_index in range(len(files_list)):
+            filename = files_list[file_index];
             with codecs.open(filename, 'r', encoding='utf-8') as bib_file:
                 bibfile = bib_file.read()
                 titles = re.findall('(title)\s*=\s\{([^\}]*)\}', bibfile)
@@ -36,3 +38,16 @@ class BibParser:
                 bib_file.close()
 
         return self.texts_list
+
+class GenerateDataset:
+    def execute (self, texts_list):
+        print('===== Reading text and vectorizing =====')
+        texts = [ text_data['content'] for text_data in texts_list ]
+        categories = [ 1 if text_data['category'] == 'selecionado' else 0
+                for text_data in texts_list ]
+        vectorizer = TfidfVectorizer()
+        features = vectorizer.fit_transform(texts)
+        return {
+            'features': features,
+            'categories': np.array(categories)
+        }

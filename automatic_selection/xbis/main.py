@@ -1,10 +1,10 @@
 import sys
-from pipeline import BibParser
+from pipeline import BibParser, GenerateDataset
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-bib_filenames = [
+argument = [
     'bibs/round1-google.bib',
     'bibs/round1-ieee.bib',
     'bibs/round1-outros.bib',
@@ -14,10 +14,13 @@ bib_filenames = [
 ]
 
 actions = [
-    BibParser(bib_filenames)
+    BibParser(),
+    GenerateDataset()
 ]
 
 for action in actions:
-    action.execute()
+    argument = action.execute(argument)
+
+print(argument)
 
 sys.exit(0)
