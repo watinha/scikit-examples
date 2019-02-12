@@ -3,6 +3,7 @@ import re, codecs
 class BibParser:
     def __init__ (self, files_list):
         self.files_list = files_list
+        self.texts_list = []
 
     def execute (self):
         for file_index in range(len(self.files_list)):
@@ -27,6 +28,11 @@ class BibParser:
                     abstract = re.sub('[\n\r]', ' ', abstracts[bib_index][1])
                     content = u'%s\n%s' % (titles[bib_index][1], abstract)
                     newfile.write(content.decode())
+                    self.texts_list.append({
+                        'content': content.decode(),
+                        'category': insert
+                    })
                     newfile.close()
                 bib_file.close()
 
+        return self.texts_list
