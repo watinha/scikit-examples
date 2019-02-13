@@ -1,5 +1,5 @@
 import sys
-from pipeline import BibParser, GenerateDataset, DecisionTreeClassifier
+from pipeline import BibParser, GenerateDataset, DecisionTreeClassifier, SVMClassifier
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -16,7 +16,8 @@ argument = [
 actions = [
     BibParser(write_files=False),
     GenerateDataset(),
-    DecisionTreeClassifier(42)
+    DecisionTreeClassifier(42),
+    SVMClassifier(42)
 ]
 
 for action in actions:
