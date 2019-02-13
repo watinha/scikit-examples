@@ -42,12 +42,15 @@ class BibParser:
         return self.texts_list
 
 class GenerateDataset:
+    def __init__ (self, ngram_range=(1,1)):
+        self._ngram_range = ngram_range
+
     def execute (self, texts_list):
         print('===== Reading text and vectorizing =====')
         texts = [ text_data['content'] for text_data in texts_list ]
         categories = [ 1 if text_data['category'] == 'selecionado' else 0
                 for text_data in texts_list ]
-        vectorizer = TfidfVectorizer()
+        vectorizer = TfidfVectorizer(ngram_range = self._ngram_range)
         features = vectorizer.fit_transform(texts)
         result = {
             'features': features,

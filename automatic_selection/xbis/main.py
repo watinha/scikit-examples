@@ -19,7 +19,7 @@ argument = [
 actions = [
     BibParser(write_files=False),
     TextFilterComposite([ StopWordsFilter(), PorterStemmerFilter() ]),
-    GenerateDataset(),
+    GenerateDataset(ngram_range=(1,3)),
     LSATransformation(n_components=100, random_state=42),
     DecisionTreeClassifier(42),
     SVMClassifier(42),
