@@ -14,7 +14,7 @@ argument = [
 ]
 
 actions = [
-    BibParser(),
+    BibParser(write_files=False),
     GenerateDataset(),
     DecisionTreeClassifier(42)
 ]

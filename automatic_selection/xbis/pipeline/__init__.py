@@ -1,12 +1,13 @@
 import re, codecs, np, random
 
-from sklearn import tree, metrics
+from sklearn import tree, metrics, svm
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import cross_val_score, GroupKFold
 
 class BibParser:
-    def __init__ (self):
+    def __init__ (self, write_files = True):
         self.texts_list = []
+        self._write_files = write_files
 
     def execute (self, files_list):
         print('===== Reading bib and transforming to text =====')
@@ -21,22 +22,23 @@ class BibParser:
 
                 if (len(titles) != len(abstracts) or len(titles) != len(inserir)):
                     print 'Different number of titles, abstracts and inserir values...'
-                    sys.exit()
+                    sys.exit(1)
 
                 for bib_index in range(len(titles)):
                     insert = 'selecionado' if inserir[bib_index][1] == 'true' else 'removido'
-                    newfile = codecs.open('corpus/%s/%s-%d.txt' %
-                            (folder, insert, (bib_index + (file_index * 1000))), 'w', encoding='utf-8')
-                    print('from %s writing file %s/%s-%d.txt' %
-                            (filename, folder, insert, (bib_index + (file_index * 1000))))
                     abstract = re.sub('[\n\r]', ' ', abstracts[bib_index][1])
                     content = u'%s\n%s' % (titles[bib_index][1], abstract)
-                    newfile.write(content.decode())
+                    if self._write_files:
+                        newfile = codecs.open('corpus/%s/%s-%d.txt' %
+                                (folder, insert, (bib_index + (file_index * 1000))), 'w', encoding='utf-8')
+                        print('from %s writing file %s/%s-%d.txt' %
+                                (filename, folder, insert, (bib_index + (file_index * 1000))))
+                        newfile.write(content.decode())
+                        newfile.close()
                     self.texts_list.append({
                         'content': content.decode(),
                         'category': insert
                     })
-                    newfile.close()
                 bib_file.close()
 
         return self.texts_list
@@ -69,4 +71,5 @@ class DecisionTreeClassifier:
         scores = cross_val_score(model, X, y, cv=5, scoring='f1_macro')
         print(scores)
         print("OUR APPROACH F-measure: %s on average and %s SD" % (scores.mean(), scores.std()))
-        return scores
+        dataset['decision_tree_scores'] = scores
+        return dataset
