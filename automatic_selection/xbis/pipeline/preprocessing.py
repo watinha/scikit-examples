@@ -27,7 +27,7 @@ class TextFilterComposite:
 
 class StopWordsFilter:
     def __init__ (self):
-        print '===== Removing stop words ====='
+        print '===== Configuring stop words removal ====='
 
     def filter (self, tokens):
         return [ word for word in tokens
@@ -35,7 +35,7 @@ class StopWordsFilter:
 
 class PorterStemmerFilter:
     def __init__ (self):
-        print '===== Stemming words ====='
+        print '===== Configuring words stemming ====='
         self._stemmer = PorterStemmer()
 
     def filter (self, tokens):

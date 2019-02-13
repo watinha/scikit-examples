@@ -52,7 +52,11 @@ class NaiveBayesClassifier (SimpleClassifier):
         random.seed(self._seed)
         kfold = StratifiedKFold(n_splits=5, random_state=self._seed)
         model = self.get_classifier()
-        scores = cross_val_score(model, X.toarray(), y, cv=kfold, scoring='f1_macro')
+        if (X.shape[1] > 1000):
+            scores = cross_val_score(model, X.toarray(), y, cv=kfold, scoring='f1_macro')
+        else:
+            scores = cross_val_score(model, X, y, cv=kfold, scoring='f1_macro')
+
         print(scores)
         print("OUR APPROACH F-measure: %s on average and %s SD" % (scores.mean(), scores.std()))
         dataset['%s_scores' % self.classifier_name] = scores

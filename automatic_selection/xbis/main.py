@@ -2,6 +2,7 @@ import sys
 from pipeline import BibParser, GenerateDataset
 from pipeline.classifier import DecisionTreeClassifier, SVMClassifier, NaiveBayesClassifier
 from pipeline.preprocessing import StopWordsFilter, PorterStemmerFilter, TextFilterComposite
+from pipeline.transformation import LSATransformation
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -19,6 +20,7 @@ actions = [
     BibParser(write_files=False),
     TextFilterComposite([ StopWordsFilter(), PorterStemmerFilter() ]),
     GenerateDataset(),
+    LSATransformation(n_components=100, random_state=42),
     DecisionTreeClassifier(42),
     SVMClassifier(42),
     NaiveBayesClassifier(42)
