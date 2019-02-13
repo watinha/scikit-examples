@@ -1,6 +1,7 @@
 import sys
 from pipeline import BibParser, GenerateDataset
 from pipeline.classifier import DecisionTreeClassifier, SVMClassifier, NaiveBayesClassifier
+from pipeline.preprocessing import StopWordsFilter
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -16,6 +17,7 @@ argument = [
 
 actions = [
     BibParser(write_files=False),
+    StopWordsFilter(),
     GenerateDataset(),
     DecisionTreeClassifier(42),
     SVMClassifier(42),
