@@ -2,32 +2,41 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem.porter import PorterStemmer
 
-class StopWordsFilter:
+class TextFilterComposite:
+    def __init__ (self, filters):
+        self._filters = filters
+
+    def _filter (self, tokens):
+        result = tokens
+        for f in self._filters:
+            result = f.filter(result)
+        return (' ').join(result)
+
     def execute (self, texts_list):
-        print '===== Removing stop words ====='
+        print '===== Executing Text Filter ====='
         result = []
         for text in texts_list:
             tokens = word_tokenize(text['content'])
+            filtered_text = self._filter(tokens)
             result.append({
-                'content': (' ').join([
-                    word for word in tokens
-                    if not word in stopwords.words('english') ]),
+                'content': filtered_text,
                 'category': text['category']
             })
 
         return result
+
+class StopWordsFilter:
+    def __init__ (self):
+        print '===== Removing stop words ====='
+
+    def filter (self, tokens):
+        return [ word for word in tokens
+                 if not word in stopwords.words('english') ]
 
 class PorterStemmerFilter:
-    def execute (self, texts_list):
+    def __init__ (self):
         print '===== Stemming words ====='
-        result = []
-        stemmer = PorterStemmer()
-        for text in texts_list:
-            tokens = word_tokenize(text['content'])
-            result.append({
-                'content': (' ').join([
-                    stemmer.stem(word) for word in tokens ]),
-                'category': text['category']
-            })
+        self._stemmer = PorterStemmer()
 
-        return result
+    def filter (self, tokens):
+        return [ self._stemmer.stem(word) for word in tokens ]
