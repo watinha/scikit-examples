@@ -1,5 +1,6 @@
 import sys
-from pipeline import BibParser, GenerateDataset, DecisionTreeClassifier, SVMClassifier
+from pipeline import BibParser, GenerateDataset
+from pipeline.classifier import DecisionTreeClassifier, SVMClassifier
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
