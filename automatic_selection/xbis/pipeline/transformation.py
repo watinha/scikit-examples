@@ -12,4 +12,3 @@ class LSATransformation:
         dataset['features'] = np.array(self._lsa.fit_transform(dataset['features']))
         print dataset
         return dataset
-
