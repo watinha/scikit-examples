@@ -3,9 +3,10 @@ import re, codecs, np
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 class BibParser:
-    def __init__ (self, write_files = True):
+    def __init__ (self, write_files = True, project_folder=''):
         self.texts_list = []
         self._write_files = write_files
+        self._project_folder = project_folder
 
     def execute (self, files_list):
         print('===== Reading bib and transforming to text =====')
@@ -16,7 +17,7 @@ class BibParser:
                 titles = re.findall('(title)\s*=\s\{([^\}]*)\}', bibfile)
                 abstracts = re.findall('(abstract)\s*=\s\{([^\}]*)\}', bibfile)
                 inserir = re.findall('(inserir)\s*=\s\{([^\}]*)\}', bibfile)
-                folder = filename.split('/')[1].split('-')[0]
+                folder = filename.split('/')[2].split('-')[0]
 
                 if (len(titles) != len(abstracts) or len(titles) != len(inserir)):
                     print 'Different number of titles, abstracts and inserir values...'
@@ -27,10 +28,12 @@ class BibParser:
                     abstract = re.sub('[\n\r]', ' ', abstracts[bib_index][1])
                     content = u'%s\n%s' % (titles[bib_index][1], abstract)
                     if self._write_files:
-                        newfile = codecs.open('corpus/%s/%s-%d.txt' %
-                                (folder, insert, (bib_index + (file_index * 1000))), 'w', encoding='utf-8')
-                        print('from %s writing file %s/%s-%d.txt' %
-                                (filename, folder, insert, (bib_index + (file_index * 1000))))
+                        newfile = codecs.open('corpus/%s/%s/%s-%d.txt' %
+                                (self._project_folder, folder, insert,
+                                (bib_index + (file_index * 1000))), 'w', encoding='utf-8')
+                        print('from %s writing file corpus/%s/%s/%s-%d.txt' %
+                                (filename, self._project_folder, folder,
+                                 insert, (bib_index + (file_index * 1000))))
                         newfile.write(content.decode())
                         newfile.close()
                     self.texts_list.append({
