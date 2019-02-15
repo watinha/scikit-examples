@@ -12,14 +12,23 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 
 argument = [
-    'bibs/xbi/round1-google.bib',
-    'bibs/xbi/round1-ieee.bib',
-    'bibs/xbi/round1-outros.bib',
-    'bibs/xbi/round2-google.bib',
-    'bibs/xbi/round2-ieee.bib',
-    'bibs/xbi/round3-google.bib'
+    'bibs/ontologies/round1-google.bib',
+    'bibs/ontologies/round1-ieee.bib',
+    'bibs/ontologies/round1-outros.bib',
+    'bibs/ontologies/round2-google.bib',
+    'bibs/ontologies/round2-ieee.bib',
+    'bibs/ontologies/round3-google.bib'
 ]
-project_folder = 'xbis'
+project_folder = 'ontologies'
+#argument = [
+#    'bibs/xbi/round1-google.bib',
+#    'bibs/xbi/round1-ieee.bib',
+#    'bibs/xbi/round1-outros.bib',
+#    'bibs/xbi/round2-google.bib',
+#    'bibs/xbi/round2-ieee.bib',
+#    'bibs/xbi/round3-google.bib'
+#]
+#project_folder = 'xbis'
 
 actions = [
     BibParser(write_files=True, project_folder=project_folder),
