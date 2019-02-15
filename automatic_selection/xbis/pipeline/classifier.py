@@ -19,6 +19,7 @@ class SimpleClassifier:
         dataset['%s_scores' % self.classifier_name] = scores
         return dataset
 
+
 class DecisionTreeClassifier (SimpleClassifier):
     def __init__ (self, seed):
         SimpleClassifier.__init__(self, seed)
@@ -28,6 +29,7 @@ class DecisionTreeClassifier (SimpleClassifier):
         print('===== Decision Tree Classifier =====')
         return tree.DecisionTreeClassifier(criterion='entropy', random_state=self._seed)
 
+
 class SVMClassifier (SimpleClassifier):
     def __init__ (self, seed):
         SimpleClassifier.__init__(self, seed)
@@ -35,7 +37,18 @@ class SVMClassifier (SimpleClassifier):
 
     def get_classifier (self):
         print('===== SVM Classifier =====')
-        return svm.SVC(gamma='scale')
+        return svm.SVC(gamma='scale', random_state=self._seed)
+
+
+class LinearSVMClassifier (SimpleClassifier):
+    def __init__ (self, seed):
+        SimpleClassifier.__init__(self, seed)
+        self.classifier_name = 'svm'
+
+    def get_classifier (self):
+        print('===== Linear SVM Classifier =====')
+        return svm.LinearSVC(random_state=self._seed)
+
 
 class NaiveBayesClassifier (SimpleClassifier):
     def __init__ (self, seed):

@@ -1,6 +1,6 @@
 import sys
 from pipeline import BibParser, GenerateDataset
-from pipeline.classifier import DecisionTreeClassifier, SVMClassifier, NaiveBayesClassifier
+from pipeline.classifier import DecisionTreeClassifier, LinearSVMClassifier, SVMClassifier, NaiveBayesClassifier
 from pipeline.preprocessing import StopWordsFilter, PorterStemmerFilter, TextFilterComposite
 from pipeline.transformation import LSATransformation
 
@@ -23,6 +23,7 @@ actions = [
     LSATransformation(n_components=100, random_state=42),
     DecisionTreeClassifier(42),
     SVMClassifier(42),
+    LinearSVMClassifier(42),
     NaiveBayesClassifier(42)
 ]
 
