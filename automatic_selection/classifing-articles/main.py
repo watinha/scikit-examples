@@ -1,9 +1,10 @@
 import sys
 
+from sklearn import tree
 from sklearn.svm import LinearSVC
 
 from pipeline import BibParser, GenerateDataset
-from pipeline.classifier import DecisionTreeClassifier, LinearSVMClassifier, SVMClassifier, NaiveBayesClassifier
+from pipeline.classifier import DecisionTreeClassifier, LinearSVMClassifier, SVMClassifier, NaiveBayesClassifier, RandomForestClassifier
 from pipeline.preprocessing import StopWordsFilter, PorterStemmerFilter, TextFilterComposite
 from pipeline.transformation import LSATransformation
 from pipeline.feature_selection import RFECVFeatureSelection, VarianceThresholdFeatureSelection
@@ -11,16 +12,16 @@ from pipeline.feature_selection import RFECVFeatureSelection, VarianceThresholdF
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-argument = [
-    'bibs/testing/round1-google.bib',
-    'bibs/testing/round1-ieee.bib',
-    'bibs/testing/round1-outros.bib',
-    'bibs/testing/round2-google.bib',
-    'bibs/testing/round2-ieee.bib',
-    'bibs/testing/round2-outros.bib',
-    'bibs/testing/round3-google.bib'
-]
-project_folder = 'testing'
+#argument = [
+#    'bibs/testing/round1-google.bib',
+#    'bibs/testing/round1-ieee.bib',
+#    'bibs/testing/round1-outros.bib',
+#    'bibs/testing/round2-google.bib',
+#    'bibs/testing/round2-ieee.bib',
+#    'bibs/testing/round2-outros.bib',
+#    'bibs/testing/round3-google.bib'
+#]
+#project_folder = 'testing'
 #argument = [
 #    'bibs/ontologies/round1-google.bib',
 #    'bibs/ontologies/round1-ieee.bib',
@@ -30,24 +31,26 @@ project_folder = 'testing'
 #    'bibs/ontologies/round3-google.bib'
 #]
 #project_folder = 'ontologies'
-#argument = [
-#    'bibs/xbi/round1-google.bib',
-#    'bibs/xbi/round1-ieee.bib',
-#    'bibs/xbi/round1-outros.bib',
-#    'bibs/xbi/round2-google.bib',
-#    'bibs/xbi/round2-ieee.bib',
-#    'bibs/xbi/round3-google.bib'
-#]
-#project_folder = 'xbis'
+argument = [
+    'bibs/xbi/round1-google.bib',
+    'bibs/xbi/round1-ieee.bib',
+    'bibs/xbi/round1-outros.bib',
+    'bibs/xbi/round2-google.bib',
+    'bibs/xbi/round2-ieee.bib',
+    'bibs/xbi/round3-google.bib'
+]
+project_folder = 'xbis'
 
 actions = [
     BibParser(write_files=False, project_folder=project_folder),
     TextFilterComposite([ StopWordsFilter(), PorterStemmerFilter() ]),
     GenerateDataset(ngram_range=(1,3)),
-    LSATransformation(n_components=100, random_state=42),
-#    VarianceThresholdFeatureSelection(threshold=0.0001),
-#    RFECVFeatureSelection(LinearSVC()),
-    DecisionTreeClassifier(42),
+    #LSATransformation(n_components=100, random_state=42),
+    VarianceThresholdFeatureSelection(threshold=0.0001),
+    #RFECVFeatureSelection(LinearSVC()),
+    RFECVFeatureSelection(tree.DecisionTreeClassifier(criterion='entropy')),
+    DecisionTreeClassifier(seed=42, criterion='entropy'),
+    RandomForestClassifier(seed=42, criterion='entropy'),
     SVMClassifier(42),
     LinearSVMClassifier(42),
     NaiveBayesClassifier(42)

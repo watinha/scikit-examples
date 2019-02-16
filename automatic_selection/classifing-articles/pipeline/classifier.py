@@ -1,6 +1,6 @@
 import np, random
 
-from sklearn import tree, metrics, svm, naive_bayes
+from sklearn import tree, metrics, svm, naive_bayes, ensemble
 from sklearn.model_selection import cross_val_score, StratifiedKFold
 
 class SimpleClassifier:
@@ -19,15 +19,27 @@ class SimpleClassifier:
         dataset['%s_scores' % self.classifier_name] = scores
         return dataset
 
+class RandomForestClassifier (SimpleClassifier):
+    def __init__ (self, seed=42, criterion='entropy'):
+        SimpleClassifier.__init__(self, seed)
+        self.classifier_name = 'random_forest'
+        self._criterion = criterion
+
+    def get_classifier (self):
+        print('===== Random Forest Classifier =====')
+        return ensemble.RandomForestClassifier(
+                n_estimators=100, criterion=self._criterion, random_state=self._seed)
+
 
 class DecisionTreeClassifier (SimpleClassifier):
-    def __init__ (self, seed):
+    def __init__ (self, seed=42, criterion='entropy'):
         SimpleClassifier.__init__(self, seed)
         self.classifier_name = 'decision_tree'
+        self._criterion = criterion
 
     def get_classifier (self):
         print('===== Decision Tree Classifier =====')
-        return tree.DecisionTreeClassifier(criterion='entropy', random_state=self._seed)
+        return tree.DecisionTreeClassifier(criterion=self._criterion, random_state=self._seed)
 
 
 class SVMClassifier (SimpleClassifier):
