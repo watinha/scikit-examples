@@ -14,6 +14,17 @@ sys.setdefaultencoding('utf-8')
 
 inputs = [
     {
+        'argument': [ 'bibs/illiterate/round1-others.bib' ],
+        'project_folder': 'illiterate',
+        'elimination_classifier': LinearSVC()
+    },
+    {
+        'argument': [ 'bibs/mdwe/round1-acm.bib',
+            'bibs/mdwe/round1-ieee.bib', 'bibs/mdwe/round1-sciencedirect.bib' ],
+        'project_folder': 'mdwe',
+        'elimination_classifier': LinearSVC()
+    },
+    {
         'argument': [ 'bibs/testing/round1-google.bib',
         'bibs/testing/round1-ieee.bib', 'bibs/testing/round1-outros.bib',
         'bibs/testing/round2-google.bib', 'bibs/testing/round2-ieee.bib',

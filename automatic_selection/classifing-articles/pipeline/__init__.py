@@ -14,7 +14,7 @@ class BibParser:
             filename = files_list[file_index];
             with codecs.open(filename, 'r', encoding='utf-8') as bib_file:
                 bibfile = bib_file.read()
-                titles = re.findall('(title)\s*=\s\{([^\}]*)\}', bibfile)
+                titles = re.findall('([^book][^short]title)\s*=\s\{([^\}]*)\}', bibfile)
                 abstracts = re.findall('(abstract)\s*=\s\{([^\}]*)\}', bibfile)
                 inserir = re.findall('(inserir)\s*=\s\{([^\}]*)\}', bibfile)
                 folder = filename.split('/')[2].split('-')[0]

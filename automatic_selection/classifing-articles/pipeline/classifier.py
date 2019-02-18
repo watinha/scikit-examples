@@ -77,7 +77,7 @@ class NaiveBayesClassifier (SimpleClassifier):
         random.seed(self._seed)
         kfold = StratifiedKFold(n_splits=5, random_state=self._seed)
         model = self.get_classifier()
-        if (X.shape[1] > 1000):
+        if (X.shape[1] > 3000):
             scores = cross_val_score(model, X.toarray(), y, cv=kfold, scoring='f1_macro')
         else:
             scores = cross_val_score(model, X, y, cv=kfold, scoring='f1_macro')
