@@ -5,7 +5,7 @@ from sklearn.svm import LinearSVC, SVC
 
 from pipeline import BibParser, GenerateDataset
 from pipeline.classifier import DecisionTreeClassifier, LinearSVMClassifier, SVMClassifier, NaiveBayesClassifier, RandomForestClassifier
-from pipeline.preprocessing import StopWordsFilter, PorterStemmerFilter, TextFilterComposite
+from pipeline.preprocessing import LemmatizerFilter, StopWordsFilter, PorterStemmerFilter, TextFilterComposite
 from pipeline.transformation import LSATransformation
 from pipeline.feature_selection import RFECVFeatureSelection, VarianceThresholdFeatureSelection
 
@@ -59,7 +59,7 @@ for input in inputs:
     elimination_classifier = input['elimination_classifier']
     actions = [
         BibParser(write_files=False, project_folder=project_folder),
-        TextFilterComposite([ StopWordsFilter(), PorterStemmerFilter() ]),
+        TextFilterComposite([ LemmatizerFilter(), StopWordsFilter(), PorterStemmerFilter() ]),
         GenerateDataset(ngram_range=(1,3)),
         #LSATransformation(n_components=100, random_state=42),
         VarianceThresholdFeatureSelection(threshold=0.0001),

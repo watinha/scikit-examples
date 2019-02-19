@@ -1,5 +1,7 @@
+from nltk import pos_tag
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
+from nltk.stem import WordNetLemmatizer
 from nltk.stem.porter import PorterStemmer
 
 class TextFilterComposite:
@@ -24,6 +26,19 @@ class TextFilterComposite:
             })
 
         return result
+
+class LemmatizerFilter:
+    def __init__ (self):
+        print '===== Configure the lemmatizer ====='
+        self._lemmatizer = WordNetLemmatizer()
+
+    def filter (self, tokens):
+        tags = pos_tag(tokens)
+        return [ self._lemmatizer.lemmatize(token[0], pos=token[1][0].lower())
+                    if token[1][0].lower() in ('a', 'n', 'v', 'r')
+                    else self._lemmatizer.lemmatize(token[0])
+                    for token in tags ]
+
 
 class StopWordsFilter:
     def __init__ (self):
