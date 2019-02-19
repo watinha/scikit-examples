@@ -1,7 +1,7 @@
 import np, random
 
 from sklearn import tree, metrics, svm, naive_bayes, ensemble
-from sklearn.model_selection import cross_val_score, StratifiedKFold
+from sklearn.model_selection import cross_validate, StratifiedKFold
 
 class SimpleClassifier:
     def __init__ (self, seed):
@@ -13,9 +13,13 @@ class SimpleClassifier:
         random.seed(self._seed)
         kfold = StratifiedKFold(n_splits=5, random_state=self._seed)
         model = self.get_classifier()
-        scores = cross_val_score(model, X, y, cv=kfold, scoring='f1_macro')
-        print(scores)
-        print("OUR APPROACH F-measure: %s on average and %s SD" % (scores.mean(), scores.std()))
+        scores = cross_validate(model, X, y, cv=kfold, scoring=['f1_macro', 'precision_macro', 'recall_macro'])
+        print("OUR APPROACH F-measure: %s on average and %s SD" %
+                (scores['test_f1_macro'].mean(), scores['test_f1_macro'].std()))
+        print("OUR APPROACH Precision: %s on average and %s SD" %
+                (scores['test_precision_macro'].mean(), scores['test_precision_macro'].std()))
+        print("OUR APPROACH Recall: %s on average and %s SD" %
+                (scores['test_recall_macro'].mean(), scores['test_recall_macro'].std()))
         dataset['%s_scores' % self.classifier_name] = scores
         return dataset
 
@@ -78,11 +82,15 @@ class NaiveBayesClassifier (SimpleClassifier):
         kfold = StratifiedKFold(n_splits=5, random_state=self._seed)
         model = self.get_classifier()
         if (X.shape[1] > 3000):
-            scores = cross_val_score(model, X.toarray(), y, cv=kfold, scoring='f1_macro')
+            scores = cross_validate(model, X.toarray(), y, cv=kfold, scoring=['f1_macro', 'precision_macro', 'recall_macro'])
         else:
-            scores = cross_val_score(model, X, y, cv=kfold, scoring='f1_macro')
+            scores = cross_validate(model, X, y, cv=kfold, scoring=['f1_macro', 'precision_macro', 'recall_macro'])
 
-        print(scores)
-        print("OUR APPROACH F-measure: %s on average and %s SD" % (scores.mean(), scores.std()))
+        print("OUR APPROACH F-measure: %s on average and %s SD" %
+                (scores['test_f1_macro'].mean(), scores['test_f1_macro'].std()))
+        print("OUR APPROACH Precision: %s on average and %s SD" %
+                (scores['test_precision_macro'].mean(), scores['test_precision_macro'].std()))
+        print("OUR APPROACH Recall: %s on average and %s SD" %
+                (scores['test_recall_macro'].mean(), scores['test_recall_macro'].std()))
         dataset['%s_scores' % self.classifier_name] = scores
         return dataset

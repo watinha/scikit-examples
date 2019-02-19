@@ -10,5 +10,5 @@ class LSATransformation:
     def execute (self, dataset):
         print '===== LSA Transformation ====='
         dataset['features'] = np.array(self._lsa.fit_transform(dataset['features']))
-        print dataset
+        print dataset['features'].shape
         return dataset

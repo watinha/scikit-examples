@@ -61,5 +61,5 @@ class GenerateDataset:
             'features': features,
             'categories': np.array(categories)
         }
-        print (result)
+        print (result['features'].shape)
         return result

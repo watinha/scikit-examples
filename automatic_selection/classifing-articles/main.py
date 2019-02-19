@@ -65,9 +65,9 @@ for input in inputs:
         VarianceThresholdFeatureSelection(threshold=0.0001),
         RFECVFeatureSelection(elimination_classifier),
         DecisionTreeClassifier(seed=42, criterion='gini'),
-        RandomForestClassifier(seed=42, criterion='gini'),
+        #RandomForestClassifier(seed=42, criterion='gini'),
         SVMClassifier(42),
-        LinearSVMClassifier(42),
+        #LinearSVMClassifier(42),
         NaiveBayesClassifier(42)
     ]
 
