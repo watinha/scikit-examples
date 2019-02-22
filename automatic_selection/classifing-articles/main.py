@@ -71,15 +71,15 @@ for input in inputs:
     argument = input['argument']
     elimination_classifier = input['elimination_classifier']
     actions = [
-        BibParser(write_files=True, project_folder=project_folder),
+        BibParser(write_files=False, project_folder=project_folder),
         TextFilterComposite([ LemmatizerFilter(), StopWordsFilter(), PorterStemmerFilter() ]),
-        GenerateDataset(TfidfVectorizer(ngram_range=(1,3), use_idf=True)),
+        GenerateDataset(TfidfVectorizer(ngram_range=(1,3), use_idf=False)),
         #LSATransformation(n_components=100, random_state=42),
         VarianceThresholdFeatureSelection(threshold=0.0001),
         RFECVFeatureSelection(elimination_classifier),
         DecisionTreeClassifier(seed=42, criterion='gini'),
         #RandomForestClassifier(seed=42, criterion='gini'),
-        SVMClassifier(42),
+        #SVMClassifier(42),
         #LinearSVMClassifier(42),
         NaiveBayesClassifier(42)
     ]
