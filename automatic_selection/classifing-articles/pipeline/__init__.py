@@ -20,9 +20,9 @@ class BibParser:
                 folder = filename.split('/')[2].split('-')[0]
 
                 if (len(titles) != len(abstracts) or len(titles) != len(inserir)):
-                    print 'Different number of titles, abstracts and inserir values...'
-                    print 'File: %s' % (filename)
-                    print 'Titles: %d\nAbstracts: %d\nInserir: %d' % (len(titles), len(abstracts), len(inserir))
+                    print('Different number of titles, abstracts and inserir values...')
+                    print('File: %s' % (filename))
+                    print('Titles: %d\nAbstracts: %d\nInserir: %d' % (len(titles), len(abstracts), len(inserir)))
                     sys.exit(1)
 
                 for bib_index in range(len(titles)):
@@ -36,10 +36,10 @@ class BibParser:
                         print('from %s writing file corpus/%s/%s/%s-%d.txt' %
                                 (filename, self._project_folder, folder,
                                  insert, (bib_index + (file_index * 1000))))
-                        newfile.write(content.decode())
+                        newfile.write(content)
                         newfile.close()
                     self.texts_list.append({
-                        'content': content.decode(),
+                        'content': content,
                         'category': insert
                     })
                 bib_file.close()

@@ -4,12 +4,12 @@ from sklearn.feature_selection import RFECV, VarianceThreshold
 class RFECVFeatureSelection:
     def __init__ (self, estimator):
         self._rfecv = RFECV(estimator = estimator,
-                cv=StratifiedKFold(5), scoring='f1_macro')
+                cv=StratifiedKFold(5), scoring='recall')
 
     def execute (self, dataset):
-        print '===== Feature selection - RFECV ====='
+        print('===== Feature selection - RFECV =====')
         dataset['features'] = self._rfecv.fit_transform(dataset['features'].toarray(), dataset['categories'])
-        print dataset['features'].shape
+        print(dataset['features'].shape)
         return dataset
 
 
@@ -18,7 +18,7 @@ class VarianceThresholdFeatureSelection:
         self._variance_threshold = VarianceThreshold(threshold=threshold)
 
     def execute (self, dataset):
-        print '===== Feature selection - Variance Threshold ====='
+        print('===== Feature selection - Variance Threshold =====')
         dataset['features'] = self._variance_threshold.fit_transform(dataset['features'])
-        print dataset['features'].shape
+        print(dataset['features'].shape)
         return dataset

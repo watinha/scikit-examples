@@ -9,9 +9,6 @@ from pipeline.preprocessing import LemmatizerFilter, StopWordsFilter, PorterStem
 from pipeline.transformation import LSATransformation
 from pipeline.feature_selection import RFECVFeatureSelection, VarianceThresholdFeatureSelection
 
-reload(sys)
-sys.setdefaultencoding('utf-8')
-
 inputs = [
     {
         'argument': [ 'bibs/illiterate/round1-others.bib' ],
@@ -51,9 +48,9 @@ inputs = [
 ]
 
 for input in inputs:
-    print ' ============================ '
-    print '   --- project %s ---' % (input['project_folder'])
-    print ' ============================ '
+    print(' ============================ ')
+    print('   --- project %s ---' % (input['project_folder']))
+    print(' ============================ ')
     project_folder = input['project_folder']
     argument = input['argument']
     elimination_classifier = input['elimination_classifier']

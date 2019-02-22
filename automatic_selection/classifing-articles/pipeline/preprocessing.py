@@ -15,7 +15,7 @@ class TextFilterComposite:
         return (' ').join(result)
 
     def execute (self, texts_list):
-        print '===== Executing Text Filter ====='
+        print('===== Executing Text Filter =====')
         result = []
         for text in texts_list:
             tokens = word_tokenize(text['content'])
@@ -29,7 +29,7 @@ class TextFilterComposite:
 
 class LemmatizerFilter:
     def __init__ (self):
-        print '===== Configure the lemmatizer ====='
+        print('===== Configure the lemmatizer =====')
         self._lemmatizer = WordNetLemmatizer()
 
     def filter (self, tokens):
@@ -42,7 +42,7 @@ class LemmatizerFilter:
 
 class StopWordsFilter:
     def __init__ (self):
-        print '===== Configuring stop words removal ====='
+        print('===== Configuring stop words removal =====')
 
     def filter (self, tokens):
         return [ word for word in tokens
@@ -50,7 +50,7 @@ class StopWordsFilter:
 
 class PorterStemmerFilter:
     def __init__ (self):
-        print '===== Configuring words stemming ====='
+        print('===== Configuring words stemming =====')
         self._stemmer = PorterStemmer()
 
     def filter (self, tokens):
