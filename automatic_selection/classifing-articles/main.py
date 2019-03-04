@@ -8,6 +8,7 @@ from pipeline.classifier import DecisionTreeClassifier, LinearSVMClassifier, SVM
 from pipeline.preprocessing import LemmatizerFilter, StopWordsFilter, PorterStemmerFilter, TextFilterComposite
 from pipeline.transformation import LSATransformation
 from pipeline.feature_selection import RFECVFeatureSelection, VarianceThresholdFeatureSelection
+from pipeline.reporter import CSVReporter
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 inputs = [
@@ -63,6 +64,8 @@ inputs = [
    }
 ]
 
+reporter = CSVReporter('result/tf-idf-rfecv.csv')
+
 for input in inputs:
     print(' ============================ ')
     print('   --- project %s ---' % (input['project_folder']))
@@ -73,18 +76,20 @@ for input in inputs:
     actions = [
         BibParser(write_files=False, project_folder=project_folder),
         TextFilterComposite([ LemmatizerFilter(), StopWordsFilter(), PorterStemmerFilter() ]),
-        GenerateDataset(TfidfVectorizer(ngram_range=(1,3), use_idf=False)),
+        GenerateDataset(TfidfVectorizer(ngram_range=(1,3), use_idf=True)),
         #LSATransformation(n_components=100, random_state=42),
         VarianceThresholdFeatureSelection(threshold=0.0001),
         RFECVFeatureSelection(elimination_classifier),
         DecisionTreeClassifier(seed=42, criterion='gini'),
         #RandomForestClassifier(seed=42, criterion='gini'),
-        #SVMClassifier(42),
+        SVMClassifier(42),
         #LinearSVMClassifier(42),
-        NaiveBayesClassifier(42)
+        NaiveBayesClassifier(42),
+        reporter
     ]
 
     for action in actions:
         argument = action.execute(argument)
 
+reporter.report()
 sys.exit(0)

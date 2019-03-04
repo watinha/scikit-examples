@@ -1,4 +1,4 @@
-import re, codecs, np, sys
+import re, codecs, np, sys, csv
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 
@@ -22,7 +22,8 @@ class BibParser:
                 if (len(titles) != len(abstracts) or len(titles) != len(inserir)):
                     print('Different number of titles, abstracts and inserir values...')
                     print('File: %s' % (filename))
-                    print('Titles: %d\nAbstracts: %d\nInserir: %d' % (len(titles), len(abstracts), len(inserir)))
+                    print('Titles: %d\nAbstracts: %d\nInserir: %d' %
+                            (len(titles), len(abstracts), len(inserir)))
                     sys.exit(1)
 
                 for bib_index in range(len(titles)):
