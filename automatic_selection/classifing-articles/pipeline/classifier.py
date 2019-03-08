@@ -32,7 +32,7 @@ class RandomForestClassifier (SimpleClassifier):
     def get_classifier (self):
         print('===== Random Forest Classifier =====')
         return ensemble.RandomForestClassifier(
-                n_estimators=100, criterion=self._criterion, random_state=self._seed)
+                n_estimators=4, criterion=self._criterion, random_state=self._seed)
 
 
 class DecisionTreeClassifier (SimpleClassifier):
