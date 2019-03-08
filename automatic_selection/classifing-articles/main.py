@@ -1,13 +1,13 @@
 import sys
 
-from sklearn import tree, naive_bayes
+from sklearn import tree, naive_bayes, ensemble
 from sklearn.svm import LinearSVC, SVC
 
 from pipeline import BibParser, GenerateDataset
 from pipeline.classifier import DecisionTreeClassifier, LinearSVMClassifier, SVMClassifier, NaiveBayesClassifier, RandomForestClassifier
 from pipeline.preprocessing import LemmatizerFilter, StopWordsFilter, PorterStemmerFilter, TextFilterComposite
 from pipeline.transformation import LSATransformation
-from pipeline.feature_selection import RFECVFeatureSelection, VarianceThresholdFeatureSelection
+from pipeline.feature_selection import RFECVFeatureSelection, VarianceThresholdFeatureSelection, USESFeatureSelection
 from pipeline.reporter import CSVReporter
 from sklearn.feature_extraction.text import TfidfVectorizer
 
@@ -15,28 +15,28 @@ inputs = [
     {
         'argument': [ 'bibs/games/round1-todos.bib' ],
         'project_folder': 'games',
-        'elimination_classifier': LinearSVC()
+        'elimination_classifier': ensemble.RandomForestClassifier()
     },
     {
         'argument': [ 'bibs/slr/round1-todos.bib' ],
         'project_folder': 'slr',
-        'elimination_classifier': tree.DecisionTreeClassifier()
+        'elimination_classifier': ensemble.RandomForestClassifier()
     },
     {
         'argument': [ 'bibs/pair/round1-todos.bib' ],
         'project_folder': 'pair',
-        'elimination_classifier': LinearSVC()
+        'elimination_classifier': ensemble.RandomForestClassifier()
     },
    {
        'argument': [ 'bibs/illiterate/round1-others.bib' ],
        'project_folder': 'illiterate',
-       'elimination_classifier': LinearSVC()
+       'elimination_classifier': ensemble.RandomForestClassifier()
    },
    {
        'argument': [ 'bibs/mdwe/round1-acm.bib',
            'bibs/mdwe/round1-ieee.bib', 'bibs/mdwe/round1-sciencedirect.bib' ],
        'project_folder': 'mdwe',
-       'elimination_classifier': LinearSVC()
+       'elimination_classifier': ensemble.RandomForestClassifier()
    },
    {
        'argument': [ 'bibs/testing/round1-google.bib',
@@ -44,7 +44,7 @@ inputs = [
        'bibs/testing/round2-google.bib', 'bibs/testing/round2-ieee.bib',
        'bibs/testing/round2-outros.bib', 'bibs/testing/round3-google.bib'],
        'project_folder': 'testing',
-       'elimination_classifier': tree.DecisionTreeClassifier()
+       'elimination_classifier': ensemble.RandomForestClassifier()
    },
    {
        'argument': [ 'bibs/ontologies/round1-google.bib',
@@ -52,7 +52,7 @@ inputs = [
            'bibs/ontologies/round2-google.bib', 'bibs/ontologies/round2-ieee.bib',
            'bibs/ontologies/round3-google.bib' ],
        'project_folder': 'ontologies',
-       'elimination_classifier': LinearSVC()
+       'elimination_classifier': ensemble.RandomForestClassifier()
    },
    {
        'argument': [ 'bibs/xbi/round1-google.bib',
@@ -60,11 +60,13 @@ inputs = [
            'bibs/xbi/round2-google.bib', 'bibs/xbi/round2-ieee.bib',
            'bibs/xbi/round3-google.bib' ],
        'project_folder': 'xbis',
-       'elimination_classifier': LinearSVC()
+       'elimination_classifier': ensemble.RandomForestClassifier()
    }
 ]
 
-reporter = CSVReporter('result/tf-idf-rfecv.csv')
+#reporter = CSVReporter('result/tf-idf-rfecv.csv')
+#reporter = CSVReporter('result/tf-idf.csv')
+reporter = CSVReporter('result/tf-idf-rfecv-random.csv')
 
 for input in inputs:
     print(' ============================ ')
@@ -79,12 +81,13 @@ for input in inputs:
         GenerateDataset(TfidfVectorizer(ngram_range=(1,3), use_idf=True)),
         #LSATransformation(n_components=100, random_state=42),
         VarianceThresholdFeatureSelection(threshold=0.0001),
-        RFECVFeatureSelection(elimination_classifier),
+        #RFECVFeatureSelection(elimination_classifier),
+        USESFeatureSelection(k=50),
         DecisionTreeClassifier(seed=42, criterion='gini'),
-        #RandomForestClassifier(seed=42, criterion='gini'),
-        SVMClassifier(42),
+        RandomForestClassifier(seed=42, criterion='gini'),
+        #SVMClassifier(42),
         #LinearSVMClassifier(42),
-        NaiveBayesClassifier(42),
+        #NaiveBayesClassifier(42),
         reporter
     ]
 
