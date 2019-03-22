@@ -1,8 +1,9 @@
 import arff, np, random
-from sklearn import tree, metrics, svm
+from sklearn import tree, metrics, svm, ensemble
 from sklearn.model_selection import cross_val_score, GroupKFold, GridSearchCV
 from sklearn.feature_selection import RFECV
 from sklearn.model_selection import StratifiedKFold
+
 
 features = [
 'childsNumber', 'textLength', # all features
@@ -61,39 +62,43 @@ X_cross = np.array([ dataset[:, index] for index in crosscheck_index ], dtype=fl
 y = np.array(dataset[:, class_index], dtype=int)
 urls = dataset[:, url_index]
 
-random.seed(42)
-model = tree.DecisionTreeClassifier(criterion='entropy', random_state=42)
-X_new = X
-rfecv = RFECV(model, cv=GroupKFold(n_splits=5), scoring='f1_macro')
-rfecv.fit(X, y, groups=urls)
-X_new = rfecv.transform(X)
-print (X.shape)
-print (X_new.shape)
-headers.append('diff_out_viewport_left')
-headers.append('diff_out_viewport_right')
-features_index.append(headers.index('diff_out_viewport_left'))
-features_index.append(headers.index('diff_out_viewport_right'))
-print ([ headers[features_index[i]]
-            for i in range(0, len(rfecv.ranking_))
-            if rfecv.ranking_[i] == 1 ])
-
-params = {
-    'criterion': ["gini", "entropy"],
-    'max_depth': [10, 30, 60, 100, None],
-    'min_samples_split': [2, 10, 15, 30, 50, 100, 200, 1000]
-}
-cfl = GridSearchCV(model, params, cv=5)
-cfl.fit(X_new, y)
-for param, value in cfl.best_params_.items():
-    print("%s : %s" % (param, value))
-model = tree.DecisionTreeClassifier(random_state=42)
-model.set_params(**cfl.best_params_)
-
-random.seed(42)
-folds = GroupKFold(n_splits=10)
-scores = cross_val_score(model, X_new, y, cv=folds, groups=urls, scoring='f1_macro')
+#random.seed(42)
+#model = tree.DecisionTreeClassifier(criterion='entropy', random_state=42)
+##model = ensemble.RandomForestClassifier(criterion='entropy', random_state=42)
+#X_new = X
+#rfecv = RFECV(model, cv=GroupKFold(n_splits=5), scoring='f1_macro')
+#rfecv.fit(X, y, groups=urls)
+#X_new = rfecv.transform(X)
+#print (X.shape)
+#print (X_new.shape)
+#headers.append('diff_out_viewport_left')
+#headers.append('diff_out_viewport_right')
+#features_index.append(headers.index('diff_out_viewport_left'))
+#features_index.append(headers.index('diff_out_viewport_right'))
+#print ([ headers[features_index[i]]
+#            for i in range(0, len(rfecv.ranking_))
+#            if rfecv.ranking_[i] == 1 ])
+#
+#params = {
+##    'n_estimators': [1, 5, 10, 20, 50],
+#    'criterion': ["gini", "entropy"],
+#    'max_depth': [10, 30, 60, 100, None],
+#    'min_samples_split': [2, 10, 30, 100, 200, 1000],
+#    'class_weight': [None, 'balanced']
+#}
+#cfl = GridSearchCV(model, params, cv=5)
+#cfl.fit(X_new, y)
+#for param, value in cfl.best_params_.items():
+#    print("%s : %s" % (param, value))
+#model = tree.DecisionTreeClassifier(random_state=42)
+##model = ensemble.RandomForestClassifier(random_state=42)
+#model.set_params(**cfl.best_params_)
+#
+#random.seed(42)
+#folds = GroupKFold(n_splits=10)
+#scores = cross_val_score(model, X_new, y, cv=folds, groups=urls, scoring='f1_macro')
 #print(scores)
-print("OUR APPROACH F-measure: %s on average and %s SD" % (scores.mean(), scores.std()))
+#print("OUR APPROACH F-measure: %s on average and %s SD" % (scores.mean(), scores.std()))
 random.seed(42)
 model = tree.DecisionTreeClassifier(criterion='entropy', random_state=42)
 folds = GroupKFold(n_splits=10)
@@ -101,23 +106,41 @@ scores = cross_val_score(model, X_cross, y, cv=folds, groups=urls, scoring='f1_m
 #print(scores)
 print("CROSSCHECK   F-measure: %s on average and %s SD" % (scores.mean(), scores.std()))
 
-#print('===== Feature selection =====')
+print('===== Feature selection =====')
 ##model = tree.DecisionTreeClassifier(criterion='entropy')
-#model = svm.LinearSVC()
-#rfecv = RFECV(model, cv=StratifiedKFold(5), scoring='f1_macro')
-#X_new = rfecv.fit_transform(X, y, groups=urls)
-#print (X.shape)
-#print (X_new.shape)
+model = svm.LinearSVC(max_iter=100000)
+rfecv = RFECV(model, cv=StratifiedKFold(5), scoring='f1_macro')
+rfecv.fit(X, y, groups=urls)
+X_new = rfecv.transform(X, y, groups=urls)
+print (X.shape)
+print (X_new.shape)
+print ([ headers[features_index[i]]
+            for i in range(0, len(rfecv.ranking_))
+            if rfecv.ranking_[i] == 1 ])
+
+params = {
+    'C': [1, 5, 10, 20, 100],
+    'penalty': ["l1", "l2"],
+    'tol': [0.0001, 0.1, 1, 5],
+    'loss': ['hinge', 'square_hinge'],
+    'class_weight': [None, 'balanced']
+}
+cfl = GridSearchCV(model, params, cv=5)
+cfl.fit(X_new, y)
+for param, value in cfl.best_params_.items():
+    print("%s : %s" % (param, value))
+
 #print (features_index)
 #print (rfecv.ranking_)
-#random.seed(42)
+random.seed(42)
 ##model = tree.DecisionTreeClassifier(criterion='entropy', random_state=42)
 #model = svm.SVC(gamma='scale')
-#model = svm.LinearSVC()
-#folds = GroupKFold(n_splits=10)
-#scores = cross_val_score(model, X_new, y, cv=folds, groups=urls, scoring='f1_macro')
+model = svm.LinearSVC()
+model.set_paramams(**cfl.best_params_)
+folds = GroupKFold(n_splits=10)
+scores = cross_val_score(model, X_new, y, cv=folds, groups=urls, scoring='f1_macro')
 #print(scores)
-#print("Our approach Feature Selection SVM F-measure: %s on average and %s SD" % (scores.mean(), scores.std()))
+print("Our approach Feature Selection SVM F-measure: %s on average and %s SD" % (scores.mean(), scores.std()))
 #features.append('diff_out_viewport_left')
 #features.append('diff_out_viewport_right')
 #selected_index = [ features[i] for i in range(len(features)) if rfecv.ranking_[i] == 1]
