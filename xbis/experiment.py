@@ -108,10 +108,10 @@ print("CROSSCHECK   F-measure: %s on average and %s SD" % (scores.mean(), scores
 
 print('===== Feature selection =====')
 ##model = tree.DecisionTreeClassifier(criterion='entropy')
-model = svm.LinearSVC(max_iter=100000)
+model = svm.LinearSVC()
 rfecv = RFECV(model, cv=StratifiedKFold(5), scoring='f1_macro')
 rfecv.fit(X, y, groups=urls)
-X_new = rfecv.transform(X, y, groups=urls)
+X_new = rfecv.transform(X)
 print (X.shape)
 print (X_new.shape)
 print ([ headers[features_index[i]]
