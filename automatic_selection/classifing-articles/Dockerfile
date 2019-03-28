@@ -8,5 +8,6 @@ RUN pip install numpy
 RUN pip install np
 RUN pip install sklearn
 RUN pip install nltk
-run python setup.py
+RUN python setup.py
+
 CMD ["python", "main.py"]
