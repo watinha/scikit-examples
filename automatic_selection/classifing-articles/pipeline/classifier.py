@@ -1,7 +1,7 @@
 import np, random
 
 from sklearn import tree, metrics, svm, naive_bayes, ensemble, linear_model, neural_network
-from sklearn.model_selection import cross_validate, StratifiedKFold, GridSearchCV
+from sklearn.model_selection import cross_validate, StratifiedKFold, GridSearchCV, train_test_split
 
 class SimpleClassifier:
     def __init__ (self, seed):
@@ -20,6 +20,13 @@ class SimpleClassifier:
                 (scores['test_precision_macro'].mean(), scores['test_precision_macro'].std()))
         print("OUR APPROACH Recall: %s on average and %s SD" %
                 (scores['test_recall_macro'].mean(), scores['test_recall_macro'].std()))
+
+        X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)
+        model.fit(X_train, y_train)
+        probabilities = model.predict_proba(X_test)
+        scores['probabilities'] = probabilities[:, 1]
+        scores['y_test'] = y_test
+
         dataset['%s_scores' % self.classifier_name] = scores
         return dataset
 

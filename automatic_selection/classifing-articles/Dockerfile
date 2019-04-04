@@ -3,11 +3,12 @@ ADD . /app
 WORKDIR /app
 EXPOSE 3000
 RUN apk add --update python3 python3-dev gfortran py-pip build-base g++ gfortran file binutils \
-                     musl-dev openblas-dev libstdc++ openblas
+                     musl-dev openblas-dev libstdc++ openblas libpng-dev freetype-dev
 RUN pip install numpy
 RUN pip install np
 RUN pip install sklearn
 RUN pip install nltk
 RUN python setup.py
+RUN pip install matplotlib
 
 CMD ["python", "main.py"]

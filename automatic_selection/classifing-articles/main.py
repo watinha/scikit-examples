@@ -64,8 +64,8 @@ inputs = [
    }
 ]
 
-#reporter = CSVReporter('result/tf-idf-rfecv.csv')
-reporter = CSVReporter('result/tf-idf.csv')
+reporter = CSVReporter('result/tf-idf-rfecv.csv')
+#reporter = CSVReporter('result/tf-idf.csv')
 #reporter = CSVReporter('result/tf-idf-rfecv-random.csv')
 
 for input in inputs:
@@ -80,14 +80,14 @@ for input in inputs:
         TextFilterComposite([ LemmatizerFilter(), StopWordsFilter(), PorterStemmerFilter() ]),
         GenerateDataset(TfidfVectorizer(ngram_range=(1,3), use_idf=True)),
         #LSATransformation(n_components=100, random_state=42),
-        #VarianceThresholdFeatureSelection(threshold=0.0001),
-        #RFECVFeatureSelection(elimination_classifier),
+        VarianceThresholdFeatureSelection(threshold=0.0001),
+        RFECVFeatureSelection(elimination_classifier),
         #USESFeatureSelection(k=50),
         DecisionTreeClassifier(seed=42, criterion='gini'),
         #RandomForestClassifier(seed=42, criterion='gini'),
-        SVMClassifier(42),
-        LogisticRegressionClassifier(42),
-        MLPClassifier(42),
+        #SVMClassifier(42),
+        #LogisticRegressionClassifier(42),
+        #MLPClassifier(42),
         #LinearSVMClassifier(42),
         #NaiveBayesClassifier(42),
         reporter
