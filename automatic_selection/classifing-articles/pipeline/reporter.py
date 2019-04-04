@@ -1,7 +1,7 @@
 import csv, re
 import matplotlib.pyplot as plt
 
-from sklearn.metrics import roc_curve, auc
+from sklearn.metrics import precision_recall_curve, roc_curve, auc
 
 class CSVReporter:
     def __init__ (self, filename):
@@ -42,7 +42,7 @@ class CSVReporter:
             y_score = scores['probabilities']
             y_test = scores['y_test']
             fpr, tpr, threasholds = roc_curve(y_test, y_score)
-            precision, recall, threasholds2 = roc_curve(y_test, y_score)
+            precision, recall, threasholds2 = precision_recall_curve(y_test, y_score)
             a = auc(fpr, tpr)
             plt.figure()
             lw = 2
@@ -59,14 +59,16 @@ class CSVReporter:
 
             plt.figure()
             lw = 2
-            plt.plot(precision, recall, color='darkorange',
-                     lw=lw, label='Precision Recall curve')
+            plt.plot(threasholds2, precision[0:len(threasholds2)], color='red',
+                     lw=lw, label='Precision curve')
+            plt.plot(threasholds2, recall[0:len(threasholds2)], color='blue',
+                     lw=lw, label='Recall curve')
             plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
             plt.xlim([0.0, 1.0])
             plt.ylim([0.0, 1.05])
-            plt.xlabel('False Positive Rate')
-            plt.ylabel('True Positive Rate')
-            plt.title('Receiver operating characteristic example')
+            plt.xlabel('Threashold')
+            plt.ylabel('Scoring')
+            plt.title('Precision recall curve')
             plt.legend(loc="lower right")
             plt.savefig('result/%d-pre-rec-%s.png' % (self._run_id, classifier_name))
 
