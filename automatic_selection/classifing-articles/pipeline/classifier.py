@@ -72,7 +72,7 @@ class DecisionTreeClassifier (SimpleClassifier):
             'min_samples_split': [2, 10, 100],
             'class_weight': [None, 'balanced']
         }
-        cfl = GridSearchCV(model, params, cv=5)
+        cfl = GridSearchCV(model, params, cv=5, scoring='recall')
         cfl.fit(X, y)
         for param, value in cfl.best_params_.items():
             print("%s : %s" % (param, value))
@@ -109,7 +109,24 @@ class SVMClassifier (SimpleClassifier):
 
     def get_classifier (self, X, y):
         print('===== SVM Classifier =====')
-        return svm.SVC(gamma='scale', random_state=self._seed)
+        print('===== Hyperparameter tunning  =====')
+        params = {
+            'kernel': ['linear', 'rbf', 'poly', 'sigmoid'],
+            'C': [1, 10, 100],
+            'gamma': ['scale', 'auto'],
+            'degree': [1, 2, 3],
+            'coef0': [0, 10, 100],
+            'class_weight': ['balanced', None]
+        }
+        model = svm.SVC(random_state=self._seed, probability=True)
+        cfl = GridSearchCV(model, params, cv=StratifiedKFold(n_splits=5, random_state=self._seed), scoring='recall')
+        cfl.fit(X, y)
+        for param, value in cfl.best_params_.items():
+            print("%s : %s" % (param, value))
+
+        model = svm.SVC(random_state=self._seed, probability=True)
+        model.set_params(**cfl.best_params_)
+        return model
 
 
 class LinearSVMClassifier (SimpleClassifier):
@@ -119,7 +136,20 @@ class LinearSVMClassifier (SimpleClassifier):
 
     def get_classifier (self, X, y):
         print('===== Linear SVM Classifier =====')
-        return svm.LinearSVC(random_state=self._seed)
+        model = svm.LinearSVC(random_state=self._seed)
+        params = {
+            'C': [1, 10, 100],
+            'tol': [0.0001, 0.1, 10],
+            'class_weight': ['balanced', None]
+        }
+        cfl = GridSearchCV(model, params, cv=5, scoring='recall')
+        cfl.fit(X, y)
+        for param, value in cfl.best_params_.items():
+            print("%s : %s" % (param, value))
+
+        model = svm.LinearSVC(random_state=self._seed)
+        model.set_params(**cfl.best_params_)
+        return model
 
 
 class NaiveBayesClassifier (SimpleClassifier):
