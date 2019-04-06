@@ -99,7 +99,21 @@ class MLPClassifier (SimpleClassifier):
 
     def get_classifier (self, X, y):
         print('===== MLP Classifier =====')
-        return neural_network.MLPClassifier(random_state=self._seed)
+        print('===== Hyperparameter tunning  =====')
+        model = neural_network.MLPClassifier(random_state=self._seed)
+        params = {
+            'hidden_layer_sizes': [10, 20, 50],
+            'activation': ['relu', 'logistic', 'tanh'],
+            'solver': ['lbfgs', 'adam']
+        }
+        cfl = GridSearchCV(model, params, cv=5, scoring='recall')
+        cfl.fit(X, y)
+        for param, value in cfl.best_params_.items():
+            print("%s : %s" % (param, value))
+
+        model = neural_network.MLPClassifier(random_state=self._seed)
+        model.set_params(**cfl.best_params_)
+        return model
 
 
 class SVMClassifier (SimpleClassifier):
