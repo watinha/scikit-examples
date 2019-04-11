@@ -140,15 +140,18 @@ print("Testing Accuracy:  {:.4f}".format(accuracy))
 #    embedding_matrix = np.zeros((vocab_size, embedding_dim))
 #
 #    for word in word_index.keys():
-#        idx = word_index[word]
-#        embedding_matrix[idx] = np.array(
-#            se_embedding.get_vector(word), dtype=np.float32)[:embedding_dim]
+#        try:
+#            idx = word_index[word]
+#            embedding_matrix[idx] = np.array(
+#                se_embedding.get_vector(word), dtype=np.float32)[:embedding_dim]
+#        except:
+#            print('%s not in embedding...' % (word))
 #
 #    return embedding_matrix
 #
 #
 #embedding_dim = 200
-#embedding_matrix = create_embedding_matrix(
+#embedding_matrix = create_gensim_matrix(
 #     se_embeddings, tokenizer.word_index, embedding_dim)
 #
 #model = Sequential()
