@@ -59,13 +59,13 @@ X_test = tokenizer.texts_to_sequences(sentences_test)
 
 vocab_size = len(tokenizer.word_index) + 1
 
-X_train = pad_sequences(X_train, padding='post', maxlen=100)
-X_test = pad_sequences(X_test, padding='post', maxlen=100)
+X_train = pad_sequences(X_train, padding='post', maxlen=500)
+X_test = pad_sequences(X_test, padding='post', maxlen=500)
 
 model = Sequential()
 model.add(layers.Embedding(input_dim=vocab_size,
-                           output_dim=50,
-                           input_length=100))
+                           output_dim=200,
+                           input_length=500))
 model.add(layers.GlobalMaxPool1D())
 model.add(layers.Dense(10, input_dim=input_dim, activation='relu'))
 model.add(layers.Dense(1, activation='sigmoid'))
@@ -99,21 +99,21 @@ def create_embedding_matrix(filepath, word_index, embedding_dim):
 
     return embedding_matrix
 
-embedding_dim = 50
+embedding_dim = 200
 embedding_matrix = create_embedding_matrix(
-     'data/glove.6B/glove.6B.50d.txt',
+     'data/glove.6B/glove.6B.200d.txt',
      tokenizer.word_index, embedding_dim)
 
 model = Sequential()
 model.add(layers.Embedding(input_dim=vocab_size,
-                           output_dim=50,
+                           output_dim=200,
                            weights=[embedding_matrix],
-                           input_length=100,
+                           input_length=500,
                            trainable=True))
 #model.add(layers.Conv1D(128, 5, activation='relu'))
-#model.add(layers.GlobalMaxPool1D())
-#model.add(layers.Dense(10, input_dim=input_dim, activation='relu'))
-model.add(layers.GRU(units=32, dropout=0.2, recurrent_dropout=0.2))
+model.add(layers.GlobalMaxPool1D())
+model.add(layers.Dense(10, input_dim=input_dim, activation='relu'))
+#model.add(layers.GRU(units=32, dropout=0.2, recurrent_dropout=0.2))
 model.add(layers.Dense(1, activation='sigmoid'))
 model.compile(loss="binary_crossentropy", optimizer="adam", metrics=["accuracy"])
 model.summary()
@@ -128,3 +128,50 @@ loss, accuracy = model.evaluate(X_train, y_train, verbose=False)
 print("Training Accuracy: {:.4f}".format(accuracy))
 loss, accuracy = model.evaluate(X_test, y_test, verbose=False)
 print("Testing Accuracy:  {:.4f}".format(accuracy))
+
+
+#import gensim
+#
+#se_embeddings = gensim.models.KeyedVectors.load_word2vec_format(
+#        './data/SO_vectors_200.bin', binary=True)
+#
+#def create_gensim_matrix(se_embedding, word_index, embedding_dim):
+#    vocab_size = len(word_index) + 1  # Adding again 1 because of reserved 0 index
+#    embedding_matrix = np.zeros((vocab_size, embedding_dim))
+#
+#    for word in word_index.keys():
+#        idx = word_index[word]
+#        embedding_matrix[idx] = np.array(
+#            se_embedding.get_vector(word), dtype=np.float32)[:embedding_dim]
+#
+#    return embedding_matrix
+#
+#
+#embedding_dim = 200
+#embedding_matrix = create_embedding_matrix(
+#     se_embeddings, tokenizer.word_index, embedding_dim)
+#
+#model = Sequential()
+#model.add(layers.Embedding(input_dim=vocab_size,
+#                           output_dim=200,
+#                           weights=[embedding_matrix],
+#                           input_length=500,
+#                           trainable=True))
+##model.add(layers.Conv1D(128, 5, activation='relu'))
+#model.add(layers.GlobalMaxPool1D())
+#model.add(layers.Dense(10, input_dim=input_dim, activation='relu'))
+##model.add(layers.GRU(units=32, dropout=0.2, recurrent_dropout=0.2))
+#model.add(layers.Dense(1, activation='sigmoid'))
+#model.compile(loss="binary_crossentropy", optimizer="adam", metrics=["accuracy"])
+#model.summary()
+#
+#model.fit(X_train, y_train, epochs=100,
+#          verbose=False, validation_data=(X_test, y_test),
+#          batch_size=10)
+#
+#print('')
+#print('Keras with MLP with 10 hidden neurons and pre-trained SE Embeddings')
+#loss, accuracy = model.evaluate(X_train, y_train, verbose=False)
+#print("Training Accuracy: {:.4f}".format(accuracy))
+#loss, accuracy = model.evaluate(X_test, y_test, verbose=False)
+#print("Testing Accuracy:  {:.4f}".format(accuracy))
