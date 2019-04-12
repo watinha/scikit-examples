@@ -58,6 +58,7 @@ class GenerateDataset:
                 for text_data in texts_list ]
         features = self._vectorizer.fit_transform(texts)
         result = {
+            'texts': texts,
             'features': features,
             'categories': np.array(categories)
         }

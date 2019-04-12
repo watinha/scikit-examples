@@ -4,7 +4,7 @@ from sklearn import tree, naive_bayes, ensemble, linear_model
 from sklearn.svm import LinearSVC, SVC
 
 from pipeline import BibParser, GenerateDataset
-from pipeline.classifier import DecisionTreeClassifier, LinearSVMClassifier, SVMClassifier, NaiveBayesClassifier, RandomForestClassifier, MLPClassifier, LogisticRegressionClassifier
+from pipeline.classifier import DecisionTreeClassifier, LinearSVMClassifier, SVMClassifier, NaiveBayesClassifier, RandomForestClassifier, MLPClassifier, LogisticRegressionClassifier, MLPKerasClassifier
 from pipeline.preprocessing import LemmatizerFilter, StopWordsFilter, PorterStemmerFilter, TextFilterComposite
 from pipeline.transformation import LSATransformation
 from pipeline.feature_selection import RFECVFeatureSelection, VarianceThresholdFeatureSelection, USESFeatureSelection, SelectKBestSelection
@@ -64,8 +64,8 @@ inputs = [
    }
 ]
 
-reporter = CSVReporter('result/tf-idf-rfecv.csv')
-#reporter = CSVReporter('result/tf-idf.csv')
+#reporter = CSVReporter('result/tf-idf-rfecv.csv')
+reporter = CSVReporter('result/tf-idf.csv')
 #reporter = CSVReporter('result/tf-idf-rfecv-random.csv')
 
 for input in inputs:
@@ -77,14 +77,16 @@ for input in inputs:
     elimination_classifier = input['elimination_classifier']
     actions = [
         BibParser(write_files=False, project_folder=project_folder),
-        TextFilterComposite([ LemmatizerFilter(), StopWordsFilter(), PorterStemmerFilter() ]),
+        #TextFilterComposite([ LemmatizerFilter(), StopWordsFilter(), PorterStemmerFilter() ]),
+        TextFilterComposite([ StopWordsFilter() ]),
         GenerateDataset(TfidfVectorizer(ngram_range=(1,3), use_idf=True)),
         #LSATransformation(n_components=100, random_state=42),
         #VarianceThresholdFeatureSelection(threshold=0.0001),
-        SelectKBestSelection(k=10000),
-        RFECVFeatureSelection(elimination_classifier),
+        #SelectKBestSelection(k=10000),
+        #RFECVFeatureSelection(elimination_classifier),
         #USESFeatureSelection(k=50),
-        DecisionTreeClassifier(seed=42, criterion='gini'),
+        #DecisionTreeClassifier(seed=42, criterion='gini'),
+        MLPKerasClassifier(seed=42, activation='relu', neurons_number=10),
         #RandomForestClassifier(seed=42, criterion='gini'),
         #SVMClassifier(42),
         #LogisticRegressionClassifier(42),

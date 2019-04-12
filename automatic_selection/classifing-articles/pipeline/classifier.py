@@ -1,5 +1,8 @@
 import np, random
 
+from keras import layers
+from keras.models import Sequential
+from keras.wrappers.scikit_learn import KerasClassifier
 from sklearn import tree, metrics, svm, naive_bayes, ensemble, linear_model, neural_network
 from sklearn.model_selection import cross_validate, StratifiedKFold, GridSearchCV, train_test_split
 
@@ -29,6 +32,27 @@ class SimpleClassifier:
 
         dataset['%s_scores' % self.classifier_name] = scores
         return dataset
+
+
+class MLPKerasClassifier (SimpleClassifier):
+    def __init__ (self, seed=42, activation='relu', neurons_number=10):
+        SimpleClassifier.__init__(self, seed)
+        self.classifier_name = 'MLPKeras'
+        self._activation = activation
+        self._seed = seed
+        self._neurons_number = neurons_number
+
+    def get_classifier (self, X, y):
+        print('===== MLP Keras with %d hidden neuros Classifier =====' % (self._neurons_number))
+        def create_model ():
+            input_dim = X.shape[1]
+            model = Sequential()
+            model.add(layers.Dense(self._neurons_number, input_dim=input_dim, activation='relu'))
+            model.add(layers.Dense(1, activation='sigmoid'))
+            model.compile(loss="binary_crossentropy", optimizer="adam", metrics=["accuracy"])
+            model.summary()
+            return model
+        return KerasClassifier(build_fn=create_model, epochs=150, verbose=0)
 
 
 class RandomForestClassifier (SimpleClassifier):
