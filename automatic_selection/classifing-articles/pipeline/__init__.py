@@ -1,5 +1,7 @@
 import re, codecs, np, sys, csv
 
+from keras.preprocessing.text import Tokenizer
+from keras.preprocessing.sequence import pad_sequences
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 class BibParser:
@@ -63,4 +65,20 @@ class GenerateDataset:
             'categories': np.array(categories)
         }
         print (result['features'].shape)
+        return result
+
+
+class GenerateSequences:
+    def __init__ (self, num_words=500, maxlen=500):
+        self._num_words = num_words
+        self._maxlen = maxlen
+
+    def execute (self, result):
+        print('===== Transforming texts to sequence representation =====')
+        tokenizer = Tokenizer(num_words=self._num_words)
+        tokenizer.fit_on_texts(result['texts'])
+        features = tokenizer.texts_to_sequences(result['texts'])
+        features = pad_sequences(features, padding='post', maxlen=self._maxlen)
+        result['word_index'] = tokenizer.word_index
+        result['features'] = features
         return result
