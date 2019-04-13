@@ -218,6 +218,6 @@ class MLPKerasClassifier (SimpleClassifier):
             model.add(layers.Dense(self._neurons_number, input_dim=input_dim, activation='relu'))
             model.add(layers.Dense(1, activation='sigmoid'))
             model.compile(loss="binary_crossentropy", optimizer="adam", metrics=["accuracy"])
-            model.summary()
+            #model.summary()
             return model
         return KerasClassifier(build_fn=create_model, epochs=150, verbose=0)

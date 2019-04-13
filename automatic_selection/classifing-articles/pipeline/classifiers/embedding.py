@@ -1,4 +1,4 @@
-import np, random
+import np, random, gensim
 
 from keras import layers
 from keras.models import Sequential
@@ -10,6 +10,29 @@ from sklearn.model_selection import cross_validate, StratifiedKFold, GridSearchC
 class EmbeddingClassifier:
     def __init__ (self, seed):
         self._seed = seed
+        self._embedding_matrix = None
+
+    def get_classifier (self, X, y, word_index):
+        print('===== MLP Keras with %d hidden neurons =====' % (self._neurons_number))
+        # generate embedding matrix
+        if (self._embedding_matrix == None):
+            self._embedding_matrix = self.get_embeddings(word_index)
+
+        def create_model ():
+            input_dim = X.shape[1]
+            model = Sequential()
+            model.add(layers.Embedding(input_dim=self._vocab_size,
+                                       output_dim=self._embedding_dim,
+                                       weights=[self._embedding_matrix],
+                                       input_length=self._maxlen,
+                                       trainable=True))
+            model.add(layers.GlobalMaxPool1D())
+            model.add(layers.Dense(self._neurons_number, activation='relu'))
+            model.add(layers.Dense(1, activation='sigmoid'))
+            model.compile(loss="binary_crossentropy", optimizer="adam", metrics=["accuracy"])
+            #model.summary()
+            return model
+        return KerasClassifier(build_fn=create_model, epochs=150, verbose=0)
 
     def execute (self, dataset):
         X = dataset['features']
@@ -34,7 +57,8 @@ class EmbeddingClassifier:
         dataset['%s_scores' % self.classifier_name] = scores
         return dataset
 
-class MLPKerasGloveEmbeddingClassifier (EmbeddingClassifier):
+
+class MLPGloveEmbeddings (EmbeddingClassifier):
     def __init__ (self, seed=42, activation='relu', neurons_number=10, embedding_dim=200, maxlen=500, glove_file='glove.6B.200d.txt'):
         EmbeddingClassifier.__init__(self, seed)
         self.classifier_name = 'MLPKerasGLOVEEmbedding'
@@ -44,42 +68,23 @@ class MLPKerasGloveEmbeddingClassifier (EmbeddingClassifier):
         self._glove_file = glove_file
         self._embedding_dim = embedding_dim
         self._maxlen = maxlen
-        self._embedding_matrix = None
+
+    def get_embeddings (self, word_index):
+        print('===== Glove News Embeddings loading from %s =====' % (self._glove_file))
+        embedding_dim = self._embedding_dim
+        self._vocab_size = len(word_index) + 1  # Adding again 1 because of reserved 0 index
+        self._embedding_matrix = np.zeros((self._vocab_size, embedding_dim))
+        with open(self._glove_file) as f:
+            for line in f:
+                word, *vector = line.split()
+                if word in word_index:
+                    idx = word_index[word]
+                    self._embedding_matrix[idx] = np.array(
+                        vector, dtype=np.float32)[:embedding_dim]
+        return self._embedding_matrix
 
 
-    def get_classifier (self, X, y, word_index):
-        print('===== MLP Keras with %d hidden neuros and Glove Embedding =====' % (self._neurons_number))
-        # generate embedding matrix
-        if (self._embedding_matrix == None):
-            embedding_dim = self._embedding_dim
-            vocab_size = len(word_index) + 1  # Adding again 1 because of reserved 0 index
-            self._embedding_matrix = np.zeros((vocab_size, embedding_dim))
-            with open(self._glove_file) as f:
-                for line in f:
-                    word, *vector = line.split()
-                    if word in word_index:
-                        idx = word_index[word]
-                        self._embedding_matrix[idx] = np.array(
-                            vector, dtype=np.float32)[:embedding_dim]
-
-        def create_model ():
-            input_dim = X.shape[1]
-            model = Sequential()
-            model.add(layers.Embedding(input_dim=vocab_size,
-                                       output_dim=embedding_dim,
-                                       weights=[self._embedding_matrix],
-                                       input_length=self._maxlen,
-                                       trainable=True))
-            model.add(layers.GlobalMaxPool1D())
-            model.add(layers.Dense(self._neurons_number, activation='relu'))
-            model.add(layers.Dense(1, activation='sigmoid'))
-            model.compile(loss="binary_crossentropy", optimizer="adam", metrics=["accuracy"])
-            model.summary()
-            return model
-        return KerasClassifier(build_fn=create_model, epochs=150, verbose=0)
-
-
-class MLPKerasSEEmbeddingClassifier (EmbeddingClassifier):
+class MLPSEEmbeddings (EmbeddingClassifier):
     def __init__ (self, seed=42, activation='relu', neurons_number=10, embedding_dim=200, maxlen=500, gensim_file='SO_vectors_200.bin'):
         EmbeddingClassifier.__init__(self, seed)
         self.classifier_name = 'MLPKerasSEEmbedding'
@@ -90,39 +95,22 @@ class MLPKerasSEEmbeddingClassifier (EmbeddingClassifier):
         self._embedding_dim = embedding_dim
         self._maxlen = maxlen
         self._embedding_matrix = None
+        self._gensim_file = gensim_file
 
 
-    def get_classifier (self, X, y, word_index):
-        print('===== MLP Keras with %d hidden neuros and SE Embedding =====' % (self._neurons_number))
-        # generate embedding matrix
-        if (self._embedding_matrix == None):
-            se_embeddings = gensim.models.KeyedVectors.load_word2vec_format(
-                    './data/SO_vectors_200.bin', binary=True)
-            embedding_dim = self._embedding_dim
-            vocab_size = len(word_index) + 1  # Adding again 1 because of reserved 0 index
-            self._embedding_matrix = np.zeros((vocab_size, embedding_dim))
+    def get_embeddings (self, word_index):
+        print('===== SE Embeddings loading from %s =====' % (self._))
+        se_embeddings = gensim.models.KeyedVectors.load_word2vec_format(
+                self._gensim_file, binary=True)
+        embedding_dim = self._embedding_dim
+        self._vocab_size = len(word_index) + 1  # Adding again 1 because of reserved 0 index
+        self._embedding_matrix = np.zeros((self._vocab_size, embedding_dim))
 
-            for word in word_index.keys():
-                try:
-                    idx = word_index[word]
-                    self._embedding_matrix[idx] = np.array(
-                        se_embedding.get_vector(word), dtype=np.float32)[:embedding_dim]
-                except:
-                    print('%s not in embedding...' % (word))
-
-
-        def create_model ():
-            input_dim = X.shape[1]
-            model = Sequential()
-            model.add(layers.Embedding(input_dim=vocab_size,
-                                       output_dim=embedding_dim,
-                                       weights=[self._embedding_matrix],
-                                       input_length=self._maxlen,
-                                       trainable=True))
-            model.add(layers.GlobalMaxPool1D())
-            model.add(layers.Dense(self._neurons_number, activation='relu'))
-            model.add(layers.Dense(1, activation='sigmoid'))
-            model.compile(loss="binary_crossentropy", optimizer="adam", metrics=["accuracy"])
-            model.summary()
-            return model
-        return KerasClassifier(build_fn=create_model, epochs=150, verbose=0)
+        for word in word_index.keys():
+            try:
+                idx = word_index[word]
+                self._embedding_matrix[idx] = np.array(
+                    se_embedding.get_vector(word), dtype=np.float32)[:embedding_dim]
+            except:
+                print('%s not in embedding...' % (word))
+        return self._embedding_matrix

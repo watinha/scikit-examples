@@ -5,7 +5,7 @@ from sklearn.svm import LinearSVC, SVC
 
 from pipeline import BibParser, GenerateDataset, GenerateSequences
 from pipeline.classifiers.simple import DecisionTreeClassifier, LinearSVMClassifier, SVMClassifier, NaiveBayesClassifier, RandomForestClassifier, MLPClassifier, LogisticRegressionClassifier, MLPKerasClassifier
-from pipeline.classifiers.embedding import MLPKerasGloveEmbeddingClassifier, MLPKerasSEEmbeddingClassifier
+from pipeline.classifiers.embedding import MLPGloveEmbeddings, MLPSEEmbeddings
 from pipeline.preprocessing import LemmatizerFilter, StopWordsFilter, PorterStemmerFilter, TextFilterComposite
 from pipeline.transformation import LSATransformation
 from pipeline.feature_selection import RFECVFeatureSelection, VarianceThresholdFeatureSelection, USESFeatureSelection, SelectKBestSelection
@@ -94,10 +94,10 @@ for input in inputs:
         #LinearSVMClassifier(42),
         #NaiveBayesClassifier(42),
         GenerateSequences(num_words=500, maxlen=500),
-        MLPKerasGloveEmbeddingClassifier(seed=42, activation='relu', neurons_number=10,
+        MLPGloveEmbeddings(seed=42, activation='relu', neurons_number=10,
                                          embedding_dim=200, maxlen=500, glove_file='glove.6B.200d.txt'),
-        MLPKerasSEEmbeddingClassifier(seed=42, activation='relu', neurons_number=10,
-                                         embedding_dim=200, maxlen=500, glove_file='SO_vectors_200.bin'),
+        #MLPSEEmbeddings(seed=42, activation='relu', neurons_number=10,
+        #                                 embedding_dim=200, maxlen=500, glove_file='SO_vectors_200.bin'),
         reporter
     ]
 
