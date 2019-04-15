@@ -15,8 +15,7 @@ class EmbeddingClassifier:
     def get_classifier (self, X, y, word_index):
         print('===== MLP Keras with %d hidden neurons =====' % (self._neurons_number))
         # generate embedding matrix
-        if (self._embedding_matrix == None):
-            self._embedding_matrix = self.get_embeddings(word_index)
+        self._embedding_matrix = self.get_embeddings(word_index)
 
         def create_model ():
             input_dim = X.shape[1]
@@ -96,12 +95,13 @@ class MLPSEEmbeddings (EmbeddingClassifier):
         self._maxlen = maxlen
         self._embedding_matrix = None
         self._gensim_file = gensim_file
+        self._se_embeddings = None
 
 
     def get_embeddings (self, word_index):
         print('===== SE Embeddings loading from %s =====' % (self._))
-        se_embeddings = gensim.models.KeyedVectors.load_word2vec_format(
-                self._gensim_file, binary=True)
+        if self._se_embeddings == None:
+            self._se_embeddings = gensim.models.KeyedVectors.load_word2vec_format(self._gensim_file, binary=True)
         embedding_dim = self._embedding_dim
         self._vocab_size = len(word_index) + 1  # Adding again 1 because of reserved 0 index
         self._embedding_matrix = np.zeros((self._vocab_size, embedding_dim))
@@ -110,7 +110,7 @@ class MLPSEEmbeddings (EmbeddingClassifier):
             try:
                 idx = word_index[word]
                 self._embedding_matrix[idx] = np.array(
-                    se_embedding.get_vector(word), dtype=np.float32)[:embedding_dim]
+                    self._se_embeddings.get_vector(word), dtype=np.float32)[:embedding_dim]
             except:
                 print('%s not in embedding...' % (word))
         return self._embedding_matrix
