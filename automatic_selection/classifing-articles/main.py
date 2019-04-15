@@ -97,7 +97,7 @@ for input in inputs:
         MLPGloveEmbeddings(seed=42, activation='relu', neurons_number=10,
                                          embedding_dim=200, maxlen=500, glove_file='glove.6B.200d.txt'),
         #MLPSEEmbeddings(seed=42, activation='relu', neurons_number=10,
-        #                                 embedding_dim=200, maxlen=500, glove_file='SO_vectors_200.bin'),
+        #                                 embedding_dim=200, maxlen=500, gensim_file='SO_vectors_200.bin'),
         reporter
     ]
 

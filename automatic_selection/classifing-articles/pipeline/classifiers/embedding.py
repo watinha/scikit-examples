@@ -90,7 +90,6 @@ class MLPSEEmbeddings (EmbeddingClassifier):
         self._activation = activation
         self._seed = seed
         self._neurons_number = neurons_number
-        self._glove_file = glove_file
         self._embedding_dim = embedding_dim
         self._maxlen = maxlen
         self._embedding_matrix = None
