@@ -13,11 +13,11 @@ class EmbeddingClassifier:
         self._embedding_matrix = None
 
     def get_classifier (self, X, y, word_index):
-        print('===== MLP Keras with %d hidden neurons =====' % (self._neurons_number))
+        print('===== MLP Keras =====')
         # generate embedding matrix
         self._embedding_matrix = self.get_embeddings(word_index)
 
-        def create_model ():
+        def create_model (neurons=1):
             input_dim = X.shape[1]
             model = Sequential()
             model.add(layers.Embedding(input_dim=self._vocab_size,
@@ -26,12 +26,26 @@ class EmbeddingClassifier:
                                        input_length=self._maxlen,
                                        trainable=True))
             model.add(layers.GlobalMaxPool1D())
-            model.add(layers.Dense(self._neurons_number, activation='relu'))
+            model.add(layers.Dense(neurons, activation='relu'))
             model.add(layers.Dense(1, activation='sigmoid'))
             model.compile(loss="binary_crossentropy", optimizer="adam", metrics=["accuracy"])
             #model.summary()
             return model
-        return KerasClassifier(build_fn=create_model, epochs=150, verbose=0)
+
+        print('===== Keras hyperparameter optimization =====')
+        model = KerasClassifier(build_fn=create_model, epochs=150, verbose=0)
+        params = {
+            neurons: [1, 10, 50, 100, 200]
+        }
+        cfl = GridSearchCV(model, params, cv=5, scoring='recall')
+        cfl.fit(X, y)
+        for param, value in cfl.best_params_.items():
+            print("%s : %s" % (param, value))
+
+        model = KerasClassifier(build_fn=create_model, epochs=150, verbose=0)
+        model.set_params(**cfl.best_params_)
+        return model
+
 
     def execute (self, dataset):
         X = dataset['features']
@@ -58,12 +72,11 @@ class EmbeddingClassifier:
 
 
 class MLPGloveEmbeddings (EmbeddingClassifier):
-    def __init__ (self, seed=42, activation='relu', neurons_number=10, embedding_dim=200, maxlen=500, glove_file='glove.6B.200d.txt'):
+    def __init__ (self, seed=42, activation='relu', embedding_dim=200, maxlen=500, glove_file='glove.6B.200d.txt'):
         EmbeddingClassifier.__init__(self, seed)
         self.classifier_name = 'MLPKerasGLOVEEmbedding'
         self._activation = activation
         self._seed = seed
-        self._neurons_number = neurons_number
         self._glove_file = glove_file
         self._embedding_dim = embedding_dim
         self._maxlen = maxlen
@@ -84,12 +97,11 @@ class MLPGloveEmbeddings (EmbeddingClassifier):
 
 
 class MLPSEEmbeddings (EmbeddingClassifier):
-    def __init__ (self, seed=42, activation='relu', neurons_number=10, embedding_dim=200, maxlen=500, gensim_file='SO_vectors_200.bin'):
+    def __init__ (self, seed=42, activation='relu', embedding_dim=200, maxlen=500, gensim_file='SO_vectors_200.bin'):
         EmbeddingClassifier.__init__(self, seed)
         self.classifier_name = 'MLPKerasSEEmbedding'
         self._activation = activation
         self._seed = seed
-        self._neurons_number = neurons_number
         self._embedding_dim = embedding_dim
         self._maxlen = maxlen
         self._embedding_matrix = None

@@ -94,10 +94,10 @@ for input in inputs:
         #LinearSVMClassifier(42),
         #NaiveBayesClassifier(42),
         GenerateSequences(num_words=500, maxlen=500),
-        MLPGloveEmbeddings(seed=42, activation='relu', neurons_number=10,
-                                         embedding_dim=200, maxlen=500, glove_file='glove.6B.200d.txt'),
-        #MLPSEEmbeddings(seed=42, activation='relu', neurons_number=10,
-        #                                 embedding_dim=200, maxlen=500, gensim_file='SO_vectors_200.bin'),
+        MLPGloveEmbeddings(seed=42, activation='relu', embedding_dim=200,
+                           maxlen=500, glove_file='glove.6B.200d.txt'),
+        #MLPSEEmbeddings(seed=42, activation='relu', embedding_dim=200,
+                         #maxlen=500, gensim_file='SO_vectors_200.bin'),
         reporter
     ]
 

@@ -212,12 +212,25 @@ class MLPKerasClassifier (SimpleClassifier):
 
     def get_classifier (self, X, y):
         print('===== MLP Keras with %d hidden neuros Classifier =====' % (self._neurons_number))
-        def create_model ():
+        def create_model (neurons=1):
             input_dim = X.shape[1]
             model = Sequential()
-            model.add(layers.Dense(self._neurons_number, input_dim=input_dim, activation='relu'))
+            model.add(layers.Dense(neurons, input_dim=input_dim, activation='relu'))
             model.add(layers.Dense(1, activation='sigmoid'))
             model.compile(loss="binary_crossentropy", optimizer="adam", metrics=["accuracy"])
             #model.summary()
             return model
-        return KerasClassifier(build_fn=create_model, epochs=150, verbose=0)
+
+        print('===== Keras hyperparameter optimization =====')
+        model = KerasClassifier(build_fn=create_model, epochs=150, verbose=0)
+        params = {
+            neurons: [1, 10, 50, 100, 200]
+        }
+        cfl = GridSearchCV(model, params, cv=5, scoring='recall')
+        cfl.fit(X, y)
+        for param, value in cfl.best_params_.items():
+            print("%s : %s" % (param, value))
+
+        model = KerasClassifier(build_fn=create_model, epochs=150, verbose=0)
+        model.set_params(**cfl.best_params_)
+        return model
