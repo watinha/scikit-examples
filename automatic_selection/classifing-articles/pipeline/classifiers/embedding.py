@@ -98,7 +98,7 @@ class MLPSEEmbeddings (EmbeddingClassifier):
 
 
     def get_embeddings (self, word_index):
-        print('===== SE Embeddings loading from %s =====' % (self._))
+        print('===== SE Embeddings loading from %s =====' % (self._gensim_file))
         if self._se_embeddings == None:
             self._se_embeddings = gensim.models.KeyedVectors.load_word2vec_format(self._gensim_file, binary=True)
         embedding_dim = self._embedding_dim
