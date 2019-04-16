@@ -78,7 +78,7 @@ for input in inputs:
     elimination_classifier = input['elimination_classifier']
     actions = [
         BibParser(write_files=False, project_folder=project_folder),
-        TextFilterComposite([ LemmatizerFilter(), StopWordsFilter(), PorterStemmerFilter() ]),
+        TextFilterComposite([ LemmatizerFilter(), StopWordsFilter() ]),
         GenerateDataset(TfidfVectorizer(ngram_range=(1,3), use_idf=True)),
         #LSATransformation(n_components=100, random_state=42),
         #VarianceThresholdFeatureSelection(threshold=0.0001),
@@ -86,7 +86,7 @@ for input in inputs:
         #RFECVFeatureSelection(elimination_classifier),
         #USESFeatureSelection(k=50),
         #DecisionTreeClassifier(seed=42, criterion='gini'),
-        MLPKerasClassifier(seed=42, activation='relu', neurons_number=10),
+        MLPKerasClassifier(seed=42, activation='relu'),
         #RandomForestClassifier(seed=42, criterion='gini'),
         #SVMClassifier(42),
         #LogisticRegressionClassifier(42),

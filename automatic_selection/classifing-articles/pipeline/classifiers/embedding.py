@@ -25,7 +25,7 @@ class EmbeddingClassifier:
                                        weights=[self._embedding_matrix],
                                        input_length=self._maxlen,
                                        trainable=True))
-            model.add(layers.GlobalMaxPool1D())
+            #model.add(layers.GlobalMaxPool1D())
             model.add(layers.Dense(neurons, activation='relu'))
             model.add(layers.Dense(1, activation='sigmoid'))
             model.compile(loss="binary_crossentropy", optimizer="adam", metrics=["accuracy"])
@@ -35,9 +35,9 @@ class EmbeddingClassifier:
         print('===== Keras hyperparameter optimization =====')
         model = KerasClassifier(build_fn=create_model, epochs=150, verbose=0)
         params = {
-            neurons: [1, 10, 50, 100, 200]
+            'neurons': [1, 10, 20, 30, 50]
         }
-        cfl = GridSearchCV(model, params, cv=5, scoring='recall')
+        cfl = GridSearchCV(model, params, cv=2, scoring='accuracy')
         cfl.fit(X, y)
         for param, value in cfl.best_params_.items():
             print("%s : %s" % (param, value))

@@ -203,15 +203,14 @@ class NaiveBayesClassifier (SimpleClassifier):
 
 
 class MLPKerasClassifier (SimpleClassifier):
-    def __init__ (self, seed=42, activation='relu', neurons_number=10):
+    def __init__ (self, seed=42, activation='relu'):
         SimpleClassifier.__init__(self, seed)
         self.classifier_name = 'MLPKeras'
         self._activation = activation
         self._seed = seed
-        self._neurons_number = neurons_number
 
     def get_classifier (self, X, y):
-        print('===== MLP Keras with %d hidden neuros Classifier =====' % (self._neurons_number))
+        print('===== MLP Keras =====')
         def create_model (neurons=1):
             input_dim = X.shape[1]
             model = Sequential()
@@ -224,9 +223,9 @@ class MLPKerasClassifier (SimpleClassifier):
         print('===== Keras hyperparameter optimization =====')
         model = KerasClassifier(build_fn=create_model, epochs=150, verbose=0)
         params = {
-            neurons: [1, 10, 50, 100, 200]
+            'neurons': [1, 10, 20, 30, 50]
         }
-        cfl = GridSearchCV(model, params, cv=5, scoring='recall')
+        cfl = GridSearchCV(model, params, cv=5, scoring='accuracy')
         cfl.fit(X, y)
         for param, value in cfl.best_params_.items():
             print("%s : %s" % (param, value))
