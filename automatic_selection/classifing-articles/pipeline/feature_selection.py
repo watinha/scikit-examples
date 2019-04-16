@@ -26,10 +26,15 @@ class VarianceThresholdFeatureSelection:
 
 class SelectKBestSelection:
     def __init__ (self, k):
+        self._k = k
         self._select_k_best = SelectKBest(k=k)
 
     def execute (self, dataset):
         print('===== Feature selection - SelectKBest =====')
+
+        if dataset['features'].shape[1] < self._k:
+            return dataset
+
         dataset['features'] = self._select_k_best.fit_transform(dataset['features'], dataset['categories'])
         print(dataset['features'].shape)
         return dataset
