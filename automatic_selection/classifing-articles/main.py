@@ -66,7 +66,7 @@ inputs = [
 ]
 
 #reporter = CSVReporter('result/tf-idf-rfecv.csv')
-reporter = CSVReporter('result/tf-idf.csv')
+reporter = CSVReporter('result/tf-idf-DC-MLP-GLOVE.csv')
 #reporter = CSVReporter('result/tf-idf-rfecv-random.csv')
 
 for input in inputs:
@@ -85,7 +85,7 @@ for input in inputs:
         VarianceThresholdFeatureSelection(threshold=0.0001),
         #RFECVFeatureSelection(elimination_classifier),
         #USESFeatureSelection(k=50),
-        DecisionTreeClassifier(seed=42, criterion='gini'),
+        #DecisionTreeClassifier(seed=42, criterion='gini'),
         MLPKerasClassifier(seed=42, activation='relu'),
         #RandomForestClassifier(seed=42, criterion='gini'),
         #SVMClassifier(42),
@@ -96,8 +96,8 @@ for input in inputs:
         GenerateSequences(num_words=500, maxlen=500),
         MLPGloveEmbeddings(seed=42, activation='relu', embedding_dim=200,
                            maxlen=500, glove_file='glove.6B.200d.txt'),
-        #MLPSEEmbeddings(seed=42, activation='relu', embedding_dim=200,
-                         #maxlen=500, gensim_file='SO_vectors_200.bin'),
+        MLPSEEmbeddings(seed=42, activation='relu', embedding_dim=200,
+                        maxlen=500, gensim_file='SO_vectors_200.bin'),
         reporter
     ]
 
