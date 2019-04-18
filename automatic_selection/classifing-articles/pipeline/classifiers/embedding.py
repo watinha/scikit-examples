@@ -42,7 +42,7 @@ class EmbeddingClassifier:
         for param, value in cfl.best_params_.items():
             print("%s : %s" % (param, value))
 
-        model = KerasClassifier(build_fn=create_model, epochs=1000, verbose=1)
+        model = KerasClassifier(build_fn=create_model, epochs=150, verbose=0)
         model.set_params(**cfl.best_params_)
         return model
 

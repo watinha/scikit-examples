@@ -65,8 +65,34 @@ inputs = [
    }
 ]
 
+argument = sys.argv[1]
+if argument == 'games':
+    inputs = [ inputs[0] ]
+    reporter = CSVReporter('result/games.csv')
+if argument == 'slr':
+    inputs = [ inputs[1] ]
+    reporter = CSVReporter('result/slr.csv')
+if argument == 'pair':
+    inputs = [ inputs[2] ]
+    reporter = CSVReporter('result/pair.csv')
+if argument == 'illiterate':
+    inputs = [ inputs[3] ]
+    reporter = CSVReporter('result/illiterate.csv')
+if argument == 'mdwe':
+    inputs = [ inputs[4] ]
+    reporter = CSVReporter('result/mdwe.csv')
+if argument == 'testing':
+    inputs = [ inputs[5] ]
+    reporter = CSVReporter('result/testing.csv')
+if argument == 'ontologies':
+    inputs = [ inputs[6] ]
+    reporter = CSVReporter('result/ontologies.csv')
+if argument == 'xbi':
+    inputs = [ inputs[7] ]
+    reporter = CSVReporter('result/xbi.csv')
+
 #reporter = CSVReporter('result/tf-idf-rfecv.csv')
-reporter = CSVReporter('result/tf-idf-DC-MLP-GLOVE.csv')
+#reporter = CSVReporter('result/tf-idf-DC-MLP-GLOVE.csv')
 #reporter = CSVReporter('result/tf-idf-rfecv-random.csv')
 
 for input in inputs:
