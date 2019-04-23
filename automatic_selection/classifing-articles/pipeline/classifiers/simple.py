@@ -28,9 +28,9 @@ class SimpleClassifier:
 
         X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)
         model.fit(X_train, y_train)
-        probabilities = model.predict_proba(X_test)
-        scores['probabilities'] = probabilities[:, 1]
-        scores['y_test'] = y_test
+        #probabilities = model.predict_proba(X_test)
+        #scores['probabilities'] = probabilities[:, 1]
+        #scores['y_test'] = y_test
 
         dataset['%s_scores' % self.classifier_name] = scores
         return dataset
@@ -133,13 +133,13 @@ class SVMClassifier (SimpleClassifier):
         params = {
             'kernel': ['linear', 'rbf', 'poly', 'sigmoid'],
             'C': [1, 10, 100],
-            'gamma': ['scale', 'auto'],
             'degree': [1, 2, 3],
             'coef0': [0, 10, 100],
+            'tol': [0.001, 0.1, 1],
             'class_weight': ['balanced', None]
         }
         model = svm.SVC(random_state=self._seed, probability=True)
-        cfl = GridSearchCV(model, params, cv=StratifiedKFold(n_splits=5, random_state=self._seed), scoring='recall')
+        cfl = GridSearchCV(model, params, cv=5, scoring='accuracy')
         cfl.fit(X, y)
         for param, value in cfl.best_params_.items():
             print("%s : %s" % (param, value))
@@ -162,7 +162,7 @@ class LinearSVMClassifier (SimpleClassifier):
             'tol': [0.0001, 0.1, 10],
             'class_weight': ['balanced', None]
         }
-        cfl = GridSearchCV(model, params, cv=5, scoring='recall')
+        cfl = GridSearchCV(model, params, cv=5, scoring='accuracy')
         cfl.fit(X, y)
         for param, value in cfl.best_params_.items():
             print("%s : %s" % (param, value))

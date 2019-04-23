@@ -25,8 +25,9 @@ class EmbeddingClassifier:
                                        weights=[self._embedding_matrix],
                                        input_length=self._maxlen,
                                        trainable=True))
-            model.add(layers.Flatten())
-            model.add(layers.Dense(neurons, activation='relu'))
+            model.add(layers.LSTM(units=neurons))
+            #model.add(layers.Flatten())
+            #model.add(layers.Dense(neurons, activation='relu'))
             model.add(layers.Dense(1, activation='sigmoid'))
             model.compile(loss="binary_crossentropy", optimizer="adam", metrics=["accuracy"])
             #model.summary()

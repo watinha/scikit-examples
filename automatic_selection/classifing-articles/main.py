@@ -66,6 +66,8 @@ inputs = [
 ]
 
 argument = sys.argv[1]
+if argument == 'all':
+    reporter = CSVReporter('result/all.csv')
 if argument == 'games':
     inputs = [ inputs[0] ]
     reporter = CSVReporter('result/games.csv')
@@ -108,22 +110,22 @@ for input in inputs:
         GenerateDataset(TfidfVectorizer(ngram_range=(1,3), use_idf=True)),
         #LSATransformation(n_components=100, random_state=42),
         SelectKBestSelection(k=10000),
-        VarianceThresholdFeatureSelection(threshold=0.0001),
+        #VarianceThresholdFeatureSelection(threshold=0.0001),
         #RFECVFeatureSelection(elimination_classifier),
         #USESFeatureSelection(k=50),
         #DecisionTreeClassifier(seed=42, criterion='gini'),
         MLPKerasClassifier(seed=42, activation='relu'),
         #RandomForestClassifier(seed=42, criterion='gini'),
-        #SVMClassifier(42),
+        SVMClassifier(42),
         #LogisticRegressionClassifier(42),
         #MLPClassifier(42),
-        #LinearSVMClassifier(42),
+        LinearSVMClassifier(42),
         #NaiveBayesClassifier(42),
-        GenerateSequences(num_words=500, maxlen=500),
-        MLPGloveEmbeddings(seed=42, activation='relu', embedding_dim=200,
-                           maxlen=500, glove_file='glove.6B.200d.txt'),
-        MLPSEEmbeddings(seed=42, activation='relu', embedding_dim=200,
-                        maxlen=500, gensim_file='SO_vectors_200.bin'),
+        #GenerateSequences(num_words=500, maxlen=500),
+        #MLPGloveEmbeddings(seed=42, activation='relu', embedding_dim=50,
+        #                   maxlen=500, glove_file='glove.6B.50d.txt'),
+        #MLPSEEmbeddings(seed=42, activation='relu', embedding_dim=200,
+        #                maxlen=500, gensim_file='SO_vectors_200.bin'),
         reporter
     ]
 
