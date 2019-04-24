@@ -109,7 +109,7 @@ class EmbeddingsFeatureSelection:
             for line in f:
                 word, *vector = line.split()
                 if word in self._vectorizer.vocabulary_:
-                    idx = self._vectorizer.vocabulary_[word] # olhar aqui
+                    idx = self._vectorizer.vocabulary_[word]
                     self._embedding_matrix[idx] = np.array(
                         vector, dtype=np.float32)[:embedding_dim]
 
