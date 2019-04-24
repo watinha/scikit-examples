@@ -4,11 +4,12 @@ from sklearn import tree, naive_bayes, ensemble, linear_model
 from sklearn.svm import LinearSVC, SVC
 
 from pipeline import BibParser, GenerateDataset, GenerateSequences
-from pipeline.classifiers.simple import DecisionTreeClassifier, LinearSVMClassifier, SVMClassifier, NaiveBayesClassifier, RandomForestClassifier, MLPClassifier, LogisticRegressionClassifier, MLPKerasClassifier
+from pipeline.classifiers import DecisionTreeClassifier, LinearSVMClassifier, SVMClassifier, NaiveBayesClassifier, RandomForestClassifier, MLPClassifier, LogisticRegressionClassifier, MLPKerasClassifier
 from pipeline.classifiers.embedding import MLPGloveEmbeddings, MLPSEEmbeddings
 from pipeline.preprocessing import LemmatizerFilter, StopWordsFilter, PorterStemmerFilter, TextFilterComposite
 from pipeline.transformation import LSATransformation
-from pipeline.feature_selection import RFECVFeatureSelection, VarianceThresholdFeatureSelection, USESFeatureSelection, SelectKBestSelection, EmbeddingsFeatureSelection
+from pipeline.feature_selection import RFECVFeatureSelection, VarianceThresholdFeatureSelection, USESFeatureSelection, SelectKBestSelection
+from pipeline.feature_selection.embedding import EmbeddingsFeatureSelection
 from pipeline.reporter import CSVReporter
 from sklearn.feature_extraction.text import TfidfVectorizer
 
