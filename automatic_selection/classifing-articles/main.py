@@ -8,7 +8,7 @@ from pipeline.classifiers.simple import DecisionTreeClassifier, LinearSVMClassif
 from pipeline.classifiers.embedding import MLPGloveEmbeddings, MLPSEEmbeddings
 from pipeline.preprocessing import LemmatizerFilter, StopWordsFilter, PorterStemmerFilter, TextFilterComposite
 from pipeline.transformation import LSATransformation
-from pipeline.feature_selection import RFECVFeatureSelection, VarianceThresholdFeatureSelection, USESFeatureSelection, SelectKBestSelection
+from pipeline.feature_selection import RFECVFeatureSelection, VarianceThresholdFeatureSelection, USESFeatureSelection, SelectKBestSelection, EmbeddingsFeatureSelection
 from pipeline.reporter import CSVReporter
 from sklearn.feature_extraction.text import TfidfVectorizer
 
@@ -107,19 +107,20 @@ for input in inputs:
     actions = [
         BibParser(write_files=False, project_folder=project_folder),
         TextFilterComposite([ LemmatizerFilter(), StopWordsFilter() ]),
+        EmbeddingsFeatureSelection(k=300, random_state=42),
         GenerateDataset(TfidfVectorizer(ngram_range=(1,3), use_idf=True)),
         #LSATransformation(n_components=100, random_state=42),
         SelectKBestSelection(k=10000),
-        #VarianceThresholdFeatureSelection(threshold=0.0001),
+        VarianceThresholdFeatureSelection(threshold=0.0001),
         #RFECVFeatureSelection(elimination_classifier),
         #USESFeatureSelection(k=50),
         #DecisionTreeClassifier(seed=42, criterion='gini'),
         MLPKerasClassifier(seed=42, activation='relu'),
         #RandomForestClassifier(seed=42, criterion='gini'),
-        SVMClassifier(42),
+        #SVMClassifier(42),
         #LogisticRegressionClassifier(42),
         #MLPClassifier(42),
-        LinearSVMClassifier(42),
+        #LinearSVMClassifier(42),
         #NaiveBayesClassifier(42),
         #GenerateSequences(num_words=500, maxlen=500),
         #MLPGloveEmbeddings(seed=42, activation='relu', embedding_dim=50,
