@@ -49,6 +49,7 @@ class BibParser:
 
         return self.texts_list
 
+
 class GenerateDataset:
     def __init__ (self, vectorizer=TfidfVectorizer()):
         self._vectorizer = vectorizer
