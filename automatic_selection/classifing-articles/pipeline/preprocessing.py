@@ -21,7 +21,7 @@ class TextFilterComposite:
             tokens = word_tokenize(text['content'])
             filtered_text = self._filter(tokens)
             result.append({
-                'content': filtered_text,
+                'content': filtered_text.lower(),
                 'category': text['category']
             })
 
@@ -46,7 +46,7 @@ class StopWordsFilter:
 
     def filter (self, tokens):
         return [ word for word in tokens
-                 if not word in stopwords.words('english') ]
+                 if not word.lower() in stopwords.words('english') ]
 
 class PorterStemmerFilter:
     def __init__ (self):
@@ -54,4 +54,4 @@ class PorterStemmerFilter:
         self._stemmer = PorterStemmer()
 
     def filter (self, tokens):
-        return [ self._stemmer.stem(word) for word in tokens ]
+        return [ self._stemmer.stem(word.lower()) for word in tokens ]
