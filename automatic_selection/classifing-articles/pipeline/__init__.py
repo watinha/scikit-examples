@@ -30,8 +30,9 @@ class BibParser:
 
                 for bib_index in range(len(titles)):
                     insert = 'selecionado' if inserir[bib_index][1] == 'true' else 'removido'
+                    title = re.sub('[\n\r]', ' ', titles[bib_index][1])
                     abstract = re.sub('[\n\r]', ' ', abstracts[bib_index][1])
-                    content = u'%s\n%s' % (titles[bib_index][1], abstract)
+                    content = u'%s\n%s' % (title, abstract)
                     if self._write_files:
                         newfile = codecs.open('corpus/%s/%s/%s-%d.txt' %
                                 (self._project_folder, folder, insert,
