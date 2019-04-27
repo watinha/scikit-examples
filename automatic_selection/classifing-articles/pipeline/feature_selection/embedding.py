@@ -37,7 +37,7 @@ class EmbeddingsFeatureSelection:
                 try:
                     word_embedding = self._embedding_matrix[self._vectorizer.vocabulary_[token]]
                     word_cluster = model.predict(np.array([word_embedding]))[0]
-                    new_tokens.append(str(word_cluster))
+                    new_tokens.append('token' + str(word_cluster))
                 except:
                     #print('Key not found in index, removing word...')
                     pass
