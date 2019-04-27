@@ -9,7 +9,7 @@ from pipeline.classifiers.embedding import MLPGloveEmbeddings, MLPSEEmbeddings
 from pipeline.preprocessing import LemmatizerFilter, StopWordsFilter, PorterStemmerFilter, TextFilterComposite
 from pipeline.transformation import LSATransformation
 from pipeline.feature_selection import RFECVFeatureSelection, VarianceThresholdFeatureSelection, USESFeatureSelection, SelectKBestSelection
-from pipeline.feature_selection.embedding import EmbeddingsFeatureSelection, GloveEmbeddingLoader
+from pipeline.feature_selection.embedding import EmbeddingsFeatureSelection, GloveEmbeddingLoader, GensimEmbeddingLoader
 from pipeline.reporter import CSVReporter
 from sklearn.feature_extraction.text import TfidfVectorizer
 
@@ -110,9 +110,11 @@ for input in inputs:
         TextFilterComposite([ LemmatizerFilter(), StopWordsFilter() ]),
         EmbeddingsFeatureSelection(
             GloveEmbeddingLoader(glove_file='glove.6B.200d.txt', embedding_dim=200), k=300, random_state=42),
+        #EmbeddingsFeatureSelection(
+        #    GensimEmbeddingLoader(gensim_file='SO_vectors_200.bin', embedding_dim=200), k=300, random_state=42),
         GenerateDataset(TfidfVectorizer(ngram_range=(1,3), use_idf=True)),
         #LSATransformation(n_components=100, random_state=42),
-        SelectKBestSelection(k=10000),
+        #SelectKBestSelection(k=10000),
         VarianceThresholdFeatureSelection(threshold=0.0001),
         #RFECVFeatureSelection(elimination_classifier),
         #USESFeatureSelection(k=50),

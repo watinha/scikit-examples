@@ -65,3 +65,28 @@ class GloveEmbeddingLoader():
                     self._embedding_matrix[idx] = np.array(
                         vector, dtype=np.float32)[:embedding_dim]
         return self._embedding_matrix
+
+
+class GensimEmbeddingLoader():
+    def __init__ (self, gensim_file='SO_vectors_200.bin', embedding_dim=200):
+        self._gensim_file = gensim_file
+        self._embedding_dim = embedding_dim
+
+    def load (self, vectorizer):
+        print('===== SE Embeddings loading from %s =====' % (self._gensim_file))
+        self._se_embeddings = gensim.models.KeyedVectors.load_word2vec_format(self._gensim_file, binary=True)
+        embedding_dim = self._embedding_dim
+        self._vocab_size = len(word_index) + 1  # Adding again 1 because of reserved 0 index
+        self._embedding_matrix = np.zeros((self._vocab_size, embedding_dim))
+        not_found = []
+
+        for word in word_index.keys():
+            try:
+                idx = word_index[word]
+                self._embedding_matrix[idx] = np.array(
+                    self._se_embeddings.get_vector(word), dtype=np.float32)[:embedding_dim]
+            except:
+                not_found.append(word)
+
+        print('Not in embedding: %s...' % (not_found))
+        return self._embedding_matrix
