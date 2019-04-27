@@ -1,4 +1,4 @@
-import np
+import np, gensim
 
 from nltk.tokenize import word_tokenize
 from sklearn.feature_extraction.text import TfidfVectorizer
