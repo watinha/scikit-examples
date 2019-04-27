@@ -5,10 +5,11 @@ from keras.preprocessing.sequence import pad_sequences
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 class BibParser:
-    def __init__ (self, write_files = True, project_folder=''):
+    def __init__ (self, write_files = True, project_folder='', only_titles=False):
         self.texts_list = []
         self._write_files = write_files
         self._project_folder = project_folder
+        self._only_titles = only_titles
 
     def execute (self, files_list):
         print('===== Reading bib and transforming to text =====')
@@ -42,6 +43,8 @@ class BibParser:
                                  insert, (bib_index + (file_index * 1000))))
                         newfile.write(content)
                         newfile.close()
+                    if self._only_titles:
+                        content = content.split('\n')[0]
                     self.texts_list.append({
                         'content': content,
                         'category': insert
