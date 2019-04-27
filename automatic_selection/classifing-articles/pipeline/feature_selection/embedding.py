@@ -46,6 +46,7 @@ class EmbeddingsFeatureSelection:
 
         return dataset
 
+
 class GloveEmbeddingLoader():
     def __init__ (self, glove_file='glove.6B.200d.txt', embedding_dim=200):
         self._glove_file = glove_file
