@@ -18,16 +18,17 @@ class EmbeddingsFeatureSelection:
         texts = [ text_data['content'] for text_data in dataset ]
         self._vectorizer.fit(texts)
 
-        if (len(self._vectorizer.vocabulary_) < self._k):
-            print('Number of unique words is smaller than number of clusters (%d < %d)' %
-                    (len(self._vectorizer.vocabulary_), self._k))
-            return dataset
+        #if (len(self._vectorizer.vocabulary_) < self._k):
+        #    print('Number of unique words is smaller than number of clusters (%d < %d)' %
+        #            (len(self._vectorizer.vocabulary_), self._k))
+        #    return dataset
 
         self._embedding_matrix = self._loader.load(self._vectorizer)
 
         print('===== K-Means %d =====' % (self._k))
         model = KMeans(n_clusters=self._k, random_state=self._random_state)
-        model.fit(self._embedding_matrix)
+        np_embedding_matrix = np.array(list(self._embedding_matrix.values()))
+        model.fit(np_embedding_matrix)
 
         print('===== replacing similar words by similarity =====')
         for text_data in dataset:
@@ -35,7 +36,7 @@ class EmbeddingsFeatureSelection:
             new_tokens = []
             for token in tokens:
                 try:
-                    word_embedding = self._embedding_matrix[self._vectorizer.vocabulary_[token]]
+                    word_embedding = self._embedding_matrix[token]
                     word_cluster = model.predict(np.array([word_embedding]))[0]
                     new_tokens.append('token' + str(word_cluster))
                 except:
@@ -56,14 +57,16 @@ class GloveEmbeddingLoader():
         print('===== Glove Embeddings loading from %s =====' % (self._glove_file))
         embedding_dim = self._embedding_dim
         self._vocab_size = len(vectorizer.vocabulary_) + 1
-        self._embedding_matrix = np.zeros((self._vocab_size, embedding_dim))
+        #self._embedding_matrix = np.zeros((self._vocab_size, embedding_dim))
+        self._embedding_matrix = {}
         with open(self._glove_file) as f:
             for line in f:
                 word, *vector = line.split()
-                if word in vectorizer.vocabulary_:
-                    idx = vectorizer.vocabulary_[word]
-                    self._embedding_matrix[idx] = np.array(
-                        vector, dtype=np.float32)[:embedding_dim]
+                self._embedding_matrix[word] = np.array(vector, dtype=np.float32)[:embedding_dim]
+                #if word in vectorizer.vocabulary_:
+                #    idx = vectorizer.vocabulary_[word]
+                #    self._embedding_matrix[idx] = np.array(
+                #        vector, dtype=np.float32)[:embedding_dim]
         return self._embedding_matrix
 
 
