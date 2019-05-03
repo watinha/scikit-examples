@@ -1,5 +1,5 @@
 from sklearn.model_selection import StratifiedKFold
-from sklearn.feature_selection import RFECV, VarianceThreshold, SelectKBest
+from sklearn.feature_selection import RFECV, VarianceThreshold, SelectKBest, chi2
 
 class RFECVFeatureSelection:
     def __init__ (self, estimator):
@@ -27,7 +27,7 @@ class VarianceThresholdFeatureSelection:
 class SelectKBestSelection:
     def __init__ (self, k):
         self._k = k
-        self._select_k_best = SelectKBest(k=k)
+        self._select_k_best = SelectKBest(chi2, k=k)
 
     def execute (self, dataset):
         print('===== Feature selection - SelectKBest =====')
