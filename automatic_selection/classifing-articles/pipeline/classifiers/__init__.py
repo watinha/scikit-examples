@@ -28,9 +28,23 @@ class SimpleClassifier:
 
         X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)
         model.fit(X_train, y_train)
-        #probabilities = model.predict_proba(X_test)
-        #scores['probabilities'] = probabilities[:, 1]
-        #scores['y_test'] = y_test
+        probabilities = model.predict_proba(X_test)
+        scores['probabilities'] = probabilities[:, 1]
+        scores['y_test'] = y_test
+
+        correct_exclusion_rate = []
+        threasholds = []
+        for train_index, test_index in kfold.split(X, y):
+            X_train, X_test = X[train_index], X[test_index]
+            y_train, y_test = y[train_index], y[test_index]
+            model.fit(X_train, y_train)
+            y_score = model.predict_proba(X_test)[:, 1]
+            precision, recall, threasholds2 = metrics.precision_recall_curve(y_test, y_score)
+            matrix = metrics.confusion_matrix(y_test, [ 0 if i < threasholds2[0] else 1 for i in y_score ])
+            correct_exclusion_rate.append(matrix[0, 0] / (matrix[0, 0] + matrix[1, 1] + matrix[0, 1] + matrix[1, 0]))
+            threasholds.append(threasholds2[0])
+        scores['exclusion_rate'] = correct_exclusion_rate
+        scores['threasholds'] = threasholds
 
         dataset['%s_scores' % self.classifier_name] = scores
         return dataset
@@ -131,10 +145,11 @@ class SVMClassifier (SimpleClassifier):
         print('===== SVM Classifier =====')
         print('===== Hyperparameter tunning  =====')
         params = {
-            'kernel': ['linear', 'rbf', 'poly', 'sigmoid'],
+            #'kernel': ['linear', 'rbf', 'poly', 'sigmoid'],
+            'kernel': ['linear', 'rbf'],
             'C': [1, 10, 100],
-            'degree': [1, 2, 3],
-            'coef0': [0, 10, 100],
+            #'degree': [1, 2, 3],
+            #'coef0': [0, 10, 100],
             'tol': [0.001, 0.1, 1],
             'class_weight': ['balanced', None]
         }
